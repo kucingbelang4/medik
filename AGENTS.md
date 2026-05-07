@@ -33,3 +33,12 @@
     - You are FORBIDDEN from running `git commit` or `git push` if `npm run test` fails.
     - (if its NextJS) You must also run `npm run build` before pushing to ensure no Next.js-specific Type errors or SSR issues exist.
 - **No Force Pushing**: Always pull and resolve conflicts before pushing.
+- **MANDATORY Branch Check Before Push**: 
+    - **ALWAYS** check current branch before ANY `git push` command.
+    - If on `main` branch: **FORBIDDEN** to push. Create or switch to proper branch first.
+    - Branch creation workflow:
+        1. Check if relevant `agent/*` branch exists: `git branch -a | grep agent/`
+        2. If exists: `git checkout agent/branch-name` and pull latest
+        3. If not exists: `git checkout -b agent/descriptive-name`
+        4. Only then proceed with commit and push
+    - Pre-push checklist: `git branch --show-current` MUST NOT return `main`.

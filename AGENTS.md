@@ -24,3 +24,12 @@
 ## 5. Communication
 - If a task is ambiguous or requires a breaking change to the core architecture, **stop and ask** for clarification before proceeding.
 
+## 6. Development Guardrails 
+- **TDD Workflow**: You must use Vitest/Jest for unit tests and Playwright/Cypress for E2E.
+    1. **RED**: Create a test file (e.g., `__tests__/feature.test.tsx`) that fails.
+    2. **GREEN**: Implement the component/API route in `src/`.
+    3. **REFACTOR**: Cleanup code only after tests pass.
+- **Strict Pre-Commit Rule**: 
+    - You are FORBIDDEN from running `git commit` or `git push` if `npm run test` fails.
+    - (if its NextJS) You must also run `npm run build` before pushing to ensure no Next.js-specific Type errors or SSR issues exist.
+- **No Force Pushing**: Always pull and resolve conflicts before pushing.

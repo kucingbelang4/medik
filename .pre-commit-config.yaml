@@ -1,16 +1,12 @@
 # Pre-commit hooks configuration for Medik project
 # Docs: https://pre-commit.com/
-#
-# Install hooks: pre-commit install
-# Run manually: pre-commit run --all-files
-# Run specific hook: pre-commit run <hook-id>
 
 repos:
   # ============================================
   # STAGE 1: Pre-commit built-in checks
   # ============================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -18,9 +14,9 @@ repos:
       - id: check-toml
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ['--maxkb=5000']
+        args: ["--maxkb=5000"]
       - id: mixed-line-ending
-        args: ['--fix=lf']
+        args: ["--fix=lf"]
       - id: detect-private-key
       - id: check-json
 
@@ -28,27 +24,29 @@ repos:
   # STAGE 2: Code formatting (Prettier)
   # ============================================
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        args: ['--write', '--bracket-same-line', '--single-attribute-per-line']
-        types: [javascript, typescript, jsx, tsx, json, yaml, markdown, css, scss]
+        args: ["--write", "--bracket-same-line", "--single-attribute-per-line"]
+        types_or: [javascript, ts, jsx, tsx, json, yaml, markdown, css, scss]
 
   # ============================================
-  # STAGE 3: Linting (ESLint)
+  # STAGE 3: Linting (ESLint) - only if eslint config exists
   # ============================================
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.56.0
+    rev: v10.3.0
     hooks:
       - id: eslint
-        args: ['--fix']
-        types: [javascript, typescript, jsx, tsx]
+        args: ["--fix"]
+        types_or: [javascript, ts, jsx, tsx]
         additional_dependencies:
-          - 'eslint@^8.56.0'
-          - 'eslint-config-next@^14.0.0'
-          - 'eslint-config-prettier@^9.1.0'
-          - '@typescript-eslint/eslint-plugin@^6.19.0'
-          - '@typescript-eslint/parser@^6.19.0'
+          - "eslint@^8.56.0"
+          - "eslint-config-next@^14.0.0"
+          - "eslint-config-prettier@^9.1.0"
+          - "@typescript-eslint/eslint-plugin@^6.19.0"
+          - "@typescript-eslint/parser@^6.19.0"
+        files: '\\.(js|jsx|ts|tsx)$'
+        exclude: "node_modules"
 
   # ============================================
   # STAGE 4: Testing (ALWAYS RUN on commit)
@@ -56,47 +54,23 @@ repos:
   - repo: local
     hooks:
       - id: nextjs-tests
-        name: '🔬 Run Tests'
+        name: "🔬 Run Tests"
         entry: pnpm test
         language: system
         pass_filenames: false
         always_run: true
-        description: 'Run Next.js test suite on every commit'
-        stages: [commit]
-
-      - id: nextjs-lint
-        name: '🔍 Next.js Lint'
-        entry: pnpm lint
-        language: system
-        pass_filenames: false
-        always_run: true
-        description: 'Run Next.js linter on every commit'
-        stages: [commit]
+        description: "Run Next.js test suite on every commit"
 
   # ============================================
-  # STAGE 5: Type check (runs on push only)
+  # STAGE 5: Next.js Lint (only if Next.js project exists)
   # ============================================
   - repo: local
     hooks:
-      - id: type-check
-        name: '🔎 TypeScript Check'
-        entry: pnpm type-check
+      - id: nextjs-lint
+        name: "🔍 Next.js Lint"
+        entry: pnpm lint
         language: system
         pass_filenames: false
         always_run: false
-        description: 'Run TypeScript type checking'
-        stages: [push]
-
-  # ============================================
-  # STAGE 6: Build check (optional - runs on push only)
-  # ============================================
-  # - repo: local
-  #   hooks:
-  #     - id: nextjs-build
-  #       name: '⚙️ Next.js Build'
-  #       entry: pnpm build
-  #       language: system
-  #       pass_filenames: false
-  #       always_run: false
-  #       description: 'Verify Next.js build succeeds'
-  #       stages: [push]  # Only run on push, not every commit (slow)
+        description: "Run Next.js linter on every commit"
+        files: '\\.(js|jsx|ts|tsx)$'

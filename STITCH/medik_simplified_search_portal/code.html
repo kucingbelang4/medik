@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medik | Professional Health Search Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e2ed",
+                    "inverse-primary": "#b4c5ff",
+                    "inverse-on-surface": "#f0f0fb",
+                    "background": "#faf8ff",
+                    "on-secondary-fixed-variant": "#005049",
+                    "surface": "#faf8ff",
+                    "surface-container-highest": "#e1e2ed",
+                    "outline-variant": "#c3c6d7",
+                    "primary-fixed": "#dbe1ff",
+                    "tertiary-container": "#bc4800",
+                    "primary": "#004ac6",
+                    "surface-tint": "#0053db",
+                    "surface-dim": "#d9d9e5",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-fixed": "#00201d",
+                    "tertiary": "#943700",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-surface": "#191b23",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-tertiary-fixed": "#360f00",
+                    "secondary": "#006a61",
+                    "on-primary-fixed": "#00174b",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-secondary-container": "#006f66",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#89f5e7",
+                    "tertiary-fixed": "#ffdbcd",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "on-tertiary-container": "#ffede6",
+                    "on-background": "#191b23",
+                    "outline": "#737686",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "primary-container": "#2563eb",
+                    "surface-container-high": "#e7e7f3",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2e3039",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f3fe",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#86f2e4",
+                    "on-surface-variant": "#434655",
+                    "surface-bright": "#faf8ff",
+                    "surface-container": "#ededf9",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#7d2d00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "xs": "0.25rem",
+                    "lg": "1.5rem",
+                    "md": "1rem",
+                    "sm": "0.5rem",
+                    "gutter": "1.5rem",
+                    "xl": "2.5rem",
+                    "margin": "2rem"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "h3": ["Inter"],
+                    "body-md": ["Inter"],
+                    "h1": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "h2": ["Inter"],
+                    "label-bold": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h1": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.04em", "fontWeight": "500"}],
+                    "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin py-md max-w-7xl mx-auto">
+<div class="font-h3 text-h3 font-bold text-primary dark:text-inverse-primary tracking-tight">Medik</div>
+<nav class="hidden md:flex items-center gap-xl">
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Medicines</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Illnesses</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">A-Z Index</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="active:scale-98 transition-all p-sm rounded-full text-primary dark:text-inverse-primary">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Search Section -->
+<section class="px-margin pt-24 pb-32 max-w-5xl mx-auto text-center">
+<h1 class="font-h1 text-h1 text-on-surface mb-md">How can we help you today?</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-2xl mx-auto">Access clinical information on medicines, conditions, and health services through our professional-grade search portal.</p>
+<div class="relative max-w-3xl mx-auto">
+<div class="flex items-center bg-surface-container-low dark:bg-surface-dim rounded-full px-lg py-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 transition-all">
+<span class="material-symbols-outlined text-outline mr-md scale-125" data-icon="search">search</span>
+<input aria-label="Global medical search" class="bg-transparent border-none focus:ring-0 w-full text-body-lg font-body-lg text-on-surface placeholder:text-outline-variant" placeholder="Search medicines, symptoms, or illnesses..." type="text"/>
+<button class="bg-primary text-on-primary font-label-bold text-label-bold px-xl py-md rounded-full active:scale-95 transition-transform shadow-lg shadow-primary/20">Search</button>
+</div>
+<div class="mt-lg flex justify-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Trending:</span>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">Ibuprofen</a>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">Seasonal Allergies</a>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">Diabetes Management</a>
+</div>
+</div>
+</section>
+<!-- Simplified Grid -->
+<section class="px-margin py-xl max-w-7xl mx-auto mb-20">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Medicine Search Card -->
+<div class="md:col-span-2 bg-surface-container-lowest p-xl rounded-xl shadow-[0_4px_20px_rgba(30,41,59,0.05)] hover:shadow-lg transition-shadow group cursor-pointer flex flex-col md:flex-row items-center gap-xl">
+<div class="flex-1">
+<div class="bg-primary-container text-on-primary-container inline-flex p-sm rounded-lg mb-md">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+</div>
+<h2 class="font-h2 text-h2 mb-sm">Search Medicines</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Comprehensive database of clinical pharmacology, dosages, and contraindications verified by medical boards.</p>
+<button class="text-primary font-label-bold text-label-bold flex items-center gap-xs group-hover:gap-sm transition-all">
+                            Browse A-Z Guide <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="w-full md:w-64 h-48 rounded-xl overflow-hidden">
+<img alt="Professional medical pills" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgkwPM-tGbUitCX81Pf3dMmlbaHUWEi5yNr7rbAbLCpQ8b8pXyOEVrWZOUrpB2WSg-TNfuokMi2dSp0d_joDGFeRwbZ6wYgCHeGmwrFO-lQmFqFLriAIeQMaUnXPZEHfpmIKAB6igNpMhq66w9Q-jYQXEFNkmnHtaNIumLlGz_6UxkzFz0wCKDRsKz9eteCWSTCk8f4RUSWJcxMCppw9UUBdsOH3I-Fy094bzWSVc1A10xITRix-kW9J_5hOh95C-iYAGC8UGSfMOQ"/>
+</div>
+</div>
+<!-- Clinical Standards Badge -->
+<div class="bg-tertiary-fixed text-on-tertiary-fixed p-xl rounded-xl shadow-[0_4px_20px_rgba(30,41,59,0.05)] flex flex-col justify-center">
+<span class="font-label-bold text-label-bold uppercase tracking-widest opacity-70 mb-sm">Verified Reliability</span>
+<h3 class="font-h3 text-h3 mb-md">Clinical Standards</h3>
+<p class="font-body-md text-body-md opacity-90">All Medik content is reviewed monthly by our certified Medical Board of directors to ensure absolute clinical accuracy.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface dark:bg-background shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-1.5 transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm text-label-sm">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+<span class="font-label-sm text-label-sm">Medicines</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-label-sm text-label-sm">Illnesses</span>
+</div>
+</nav>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-dim mt-xl border-t border-outline-variant/10">
+<div class="w-full px-margin py-xl flex flex-col md:flex-row justify-between items-center gap-md max-w-7xl mx-auto">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<div class="font-h3 text-h3 text-primary font-bold">Medik</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant text-center md:text-left max-w-xs">© 2024 Medik Health Platform. Professional Clinical Reliability.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Accessibility</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Medical Board</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

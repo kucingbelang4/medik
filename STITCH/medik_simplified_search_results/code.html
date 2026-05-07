@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Results - Medik</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e2ed",
+                        "inverse-primary": "#b4c5ff",
+                        "inverse-on-surface": "#f0f0fb",
+                        "background": "#faf8ff",
+                        "on-secondary-fixed-variant": "#005049",
+                        "surface": "#faf8ff",
+                        "surface-container-highest": "#e1e2ed",
+                        "outline-variant": "#c3c6d7",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-container": "#bc4800",
+                        "primary": "#004ac6",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d9d9e5",
+                        "on-primary-container": "#eeefff",
+                        "on-secondary-fixed": "#00201d",
+                        "tertiary": "#943700",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface": "#191b23",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-tertiary-fixed": "#360f00",
+                        "secondary": "#006a61",
+                        "on-primary-fixed": "#00174b",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary-container": "#006f66",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#89f5e7",
+                        "tertiary-fixed": "#ffdbcd",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-tertiary-container": "#ffede6",
+                        "on-background": "#191b23",
+                        "outline": "#737686",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "primary-container": "#2563eb",
+                        "surface-container-high": "#e7e7f3",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3039",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f3f3fe",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#86f2e4",
+                        "on-surface-variant": "#434655",
+                        "surface-bright": "#faf8ff",
+                        "surface-container": "#ededf9",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#7d2d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1.5rem",
+                        "xl": "2.5rem",
+                        "margin": "2rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h1": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "label-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h1": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.04em", "fontWeight": "500"}],
+                        "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<header class="bg-surface dark:bg-background shadow-sm sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-margin py-md max-w-7xl mx-auto">
+<div class="flex items-center gap-xl">
+<span class="font-h3 text-h3 font-bold text-primary dark:text-inverse-primary tracking-tight">Medik</span>
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200 active:scale-98" href="#">Medicines</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200 active:scale-98" href="#">Illnesses</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200 active:scale-98" href="#">A-Z Index</a>
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 w-64">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface w-full p-0 font-body-md text-body-md" type="text" value="paracetamol"/>
+</div>
+<button class="material-symbols-outlined text-primary p-2" data-icon="account_circle">account_circle</button>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-7xl mx-auto px-margin py-xl">
+<section class="mb-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">Search Results</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Showing 12 results for "<span class="font-bold">paracetamol</span>"</p>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-4 py-2 bg-surface-container rounded-lg font-label-bold text-label-bold text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="sort">sort</span>
+                    Relevance
+                </button>
+</div>
+</div>
+<div class="flex flex-wrap gap-sm mb-xl">
+<button class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-bold text-label-bold shadow-sm transition-all active:scale-95">All Results</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-bold text-label-bold hover:bg-surface-variant transition-all active:scale-95">Medicines</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-bold text-label-bold hover:bg-surface-variant transition-all active:scale-95">Illnesses</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-bold text-label-bold hover:bg-surface-variant transition-all active:scale-95">Medical Guides</button>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-xl">
+<div class="md:col-span-8 space-y-md">
+<article class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] hover:shadow-lg transition-all duration-300 border-l-4 border-primary group">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold">Medicine</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors cursor-pointer" data-icon="bookmark">bookmark</span>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-sm group-hover:text-primary transition-colors">Paracetamol (Acetaminophen)</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md line-clamp-2">A common painkiller used to treat aches and pain. It can also be used to reduce a high temperature (fever). It's available combined with other ingredients in some cold and flu remedies.</p>
+<div class="flex flex-wrap gap-xs">
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Pain Relief</span>
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Fever</span>
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">OTC</span>
+</div>
+</article>
+<article class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] hover:shadow-lg transition-all duration-300 border-l-4 border-secondary group">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary font-bold">Illness</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors cursor-pointer" data-icon="bookmark">bookmark</span>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-sm group-hover:text-secondary transition-colors">Common Cold &amp; Fever</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md line-clamp-2">Viral infections of the upper respiratory tract. Often treated with <span class="bg-secondary-container/30 px-1 rounded">paracetamol</span> to manage elevated temperatures and body aches.</p>
+<div class="flex flex-wrap gap-xs">
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Infectious</span>
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Respiratory</span>
+</div>
+</article>
+<article class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] hover:shadow-lg transition-all duration-300 border-l-4 border-primary group">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold">Medicine</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors cursor-pointer" data-icon="bookmark">bookmark</span>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-sm group-hover:text-primary transition-colors">Co-codamol (Paracetamol/Codeine)</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md line-clamp-2">A mixture of two different painkillers: paracetamol and codeine. It's used to treat aches and pains including headaches, muscular pain, and toothache when everyday painkillers haven't worked.</p>
+<div class="flex flex-wrap gap-xs">
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Prescription Only</span>
+<span class="px-3 py-1 bg-surface-container-low rounded-md font-label-sm text-label-sm text-on-surface-variant">Strong Painkiller</span>
+</div>
+</article>
+<div class="pt-lg flex justify-center">
+<button class="flex items-center gap-sm font-label-bold text-label-bold text-primary hover:underline">
+                    Load more results
+                    <span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+<aside class="md:col-span-4 space-y-md">
+<div class="bg-surface-container-low p-lg rounded-xl">
+<h4 class="font-label-bold text-label-bold text-on-surface mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
+                    Common Searches
+                </h4>
+<ul class="space-y-sm">
+<li><a class="font-body-md text-body-md text-primary hover:underline" href="#">Ibuprofen vs Paracetamol</a></li>
+<li><a class="font-body-md text-body-md text-primary hover:underline" href="#">Dosage for children</a></li>
+<li><a class="font-body-md text-body-md text-primary hover:underline" href="#">Side effects of long-term use</a></li>
+<li><a class="font-body-md text-body-md text-primary hover:underline" href="#">Interaction with alcohol</a></li>
+</ul>
+</div>
+</aside>
+</div>
+</main>
+<footer class="w-full px-margin py-xl flex flex-col md:flex-row justify-between items-center gap-md max-w-7xl mx-auto bg-surface-container-low dark:bg-surface-dim mt-xl">
+<div class="flex flex-col md:items-start items-center gap-xs">
+<span class="font-h3 text-h3 text-primary font-bold">Medik</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant">© 2024 Medik Health Platform. Professional Clinical Reliability.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Accessibility</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Medical Board</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary underline transition-all" href="#">Contact</a>
+</div>
+</footer>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface dark:bg-background shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-1.5 transition-transform duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm text-label-sm">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+<span class="font-label-sm text-label-sm">Medicines</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-label-sm text-label-sm">Illnesses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1.5 hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved</span>
+</a>
+</nav>
+</body></html>

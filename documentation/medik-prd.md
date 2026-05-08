@@ -39,10 +39,10 @@ Based on stakeholder discussions, the following technology stack has been select
 |-------|------------|-----------|
 | **Framework** | Next.js (React) with Server-Side Rendering (SSR) and TypeScript | Enables server-side API processing, type safety, and SEO-friendly rendering |
 | **Backend** | Next.js Server (API routes / getServerSideProps) | No separate backend needed; server-side logic handles third-party API requests and caching |
-| **Caching** | Next.js server-side caching (stale-while-revalidate) + Cloudflare Edge Cache | Reduces API calls, handles rate limits, improves response times |
+| **Caching** | Redis (Upstash) + Cloudflare Edge Cache | Two-tier caching: Redis for data persistence (24h TTL), Cloudflare for edge delivery |
 | **Hosting** | Cloudflare Pages (Free Tier) | Global CDN, generous free tier, seamless Next.js integration |
 | **Language** | TypeScript (frontend and server-side) | Catch errors early, improve developer experience and code maintainability |
-| **Data Flow** | Client → Next.js SSR → Third-party APIs (openFDA, RxNorm, BPOM) → Normalize & Cache → Return | Centralizes API logic, secures credentials, enables unified data model |
+| **Data Flow** | Client → Next.js SSR → Third-party APIs (openFDA, RxNorm, BPOM) → Normalize & Redis Cache → Return | Centralizes API logic, secures credentials, enables unified data model |
 
 This stack leverages Next.js SSR as the primary backend for API orchestration, eliminating the need for a separate server while providing security, caching, and performance benefits.
 
@@ -186,7 +186,7 @@ This stack leverages Next.js SSR as the primary backend for API orchestration, e
 | NFR-001 | **Search Response Time** | < 2 seconds for results to appear (excluding network latency) |
 | NFR-002 | **Page Load Time** | < 3 seconds for initial page load |
 | NFR-003 | **API Rate Limit Handling** | Graceful degradation when external APIs are unavailable (show cached data or partial results) |
-| NFR-004 | **Caching Strategy** | Next.js server caches API responses with stale-while-revalidate (24h minimum); Cloudflare Edge Cache serves repeated requests globally; cache invalidation on API errors or manual refresh |
+| NFR-004 | **Caching Strategy** | Redis cache (Upstash) with 24h TTL for search results and drug details; Cloudflare Edge Cache serves rendered pages globally; cache invalidation via Redis DEL on API errors or manual refresh |
 | NFR-005 | **Offline Fallback** | Core search functionality works on cached data when network unavailable |
 
 ### 4.2 Security

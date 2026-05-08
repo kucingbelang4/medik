@@ -61,7 +61,7 @@ Next.js SSR (Server)
 | **Language** | TypeScript (strict mode) | Type safety across frontend and server |
 | **Styling** | Tailwind CSS (TBD) | Utility-first CSS, mobile-first |
 | **State Management** | React Server Components + minimal client state | Prefer server-rendered data |
-| **Caching** | Next.js `fetch` cache + unstable_cache + Cloudflare Edge Cache | Two-tier caching |
+| **Caching** | Redis (Upstash) + Cloudflare Edge Cache | Two-tier caching for performance |
 | **Hosting** | Cloudflare Pages (Free Tier) | Global CDN, edge deployment, Next.js adapter |
 | **Data Sources** | openFDA, RxNorm, BPOM CekBPOM API | Drug information |
 
@@ -81,20 +81,39 @@ medik/
 │   │       └── [id]/
 │   │           └── page.tsx         # Drug detail page (SSR)
 │   │
-│   ├── components/                   # React components
-│   │   ├── SearchBar.tsx            # Search input + suggestions
-│   │   ├── DrugCard.tsx             # Result list item
-│   │   ├── DrugDetail.tsx           # Full drug profile
-│   │   ├── SourceBadge.tsx         # Source attribution badge
-│   │   ├── Disclaimer.tsx          # Mandatory disclaimer
-│   │   └── ui/                      # Shared UI primitives
+│   ├── components/                   # React components (Compound Pattern)
+│   │   ├── ui/                      # Primitive components (button, badge, input)
+│   │   │   ├── button.tsx
+│   │   │   ├── badge.tsx
+│   │   │   └── input.tsx
+│   │   ├── search-bar/              # Compound component (folder pattern)
+│   │   │   ├── index.tsx            # Exports SearchBar + sub-components
+│   │   │   ├── search-bar.tsx       # Main container
+│   │   │   ├── search-input.tsx
+│   │   │   ├── search-suggestions.tsx
+│   │   │   └── search-button.tsx
+│   │   ├── drug-card/               # Compound component
+│   │   │   ├── index.tsx
+│   │   │   ├── drug-card.tsx
+│   │   │   ├── drug-card-header.tsx
+│   │   │   ├── drug-card-body.tsx
+│   │   │   └── drug-card-footer.tsx
+│   │   ├── drug-detail/             # Full detail compound
+│   │   │   ├── index.tsx
+│   │   │   ├── drug-detail-hero.tsx
+│   │   │   ├── drug-detail-clinical.tsx
+│   │   │   └── drug-detail-actions.tsx
+│   │   └── disclaimer/              # Simple compound
+│   │       ├── index.tsx
+│   │       ├── disclaimer-text.tsx
+│   │       └── disclaimer-icon.tsx
 │   │
 │   ├── lib/                         # Server-side logic
 │   │   ├── api/
 │   │   │   ├── openfda.ts           # openFDA API client
 │   │   │   ├── rxnorm.ts            # RxNorm API client
 │   │   │   └── bpom.ts              # BPOM API client
-│   │   ├── cache.ts                 # Next.js cache utilities
+│   │   ├── cache.ts                 # Redis cache utilities
 │   │   ├── normalize.ts            # Data normalization → unified Drug schema
 │   │   ├── rank.ts                  # Search result ranking algorithm
 │   │   └── types.ts                 # Shared TypeScript interfaces
@@ -295,38 +314,92 @@ If one API fails → show results from available sources with a banner: "Some da
 
 ## 6. Caching Strategy
 
-### 6.1 Two-Tier Caching
+### 6.1 Redis Caching (Primary)
 
-**Tier 1: Next.js Server Cache (Application Layer)**
+**Technology**: Redis (via Upstash Redis or self-hosted)  
+**Why Redis**: Persistent, configurable TTL, supports cache invalidation, works well with Next.js serverless functions
 
 ```typescript
-// Using Next.js unstable_cache
-import { unstable_cache } from 'next/cache';
+// Using @upstash/redis (serverless Redis)
+import { Redis } from '@upstash/redis';
 
-const getOpenFDAData = unstable_cache(
-  async (query: string) => fetchOpenFDA(query),
-  ['openfda-search'],
-  { revalidate: 86400, tags: ['openfda'] } // 24 hours
-);
+const redis = new Redis({
+  url: process.env.REDIS_URL!,
+  token: process.env.REDIS_TOKEN!,
+});
+
+// Cache a drug search result
+async function getCachedSearch(query: string): Promise<Drug[] | null> {
+  const cacheKey = `search:${query.toLowerCase().trim()}`;
+  const cached = await redis.get<Drug[]>(cacheKey);
+  return cached;
+}
+
+async function setCachedSearch(query: string, results: Drug[]): Promise<void> {
+  const cacheKey = `search:${query.toLowerCase().trim()}`;
+  await redis.set(cacheKey, results, { ex: 86400 }); // 24 hours TTL
+}
+```
+
+**Redis Data Structures:**
+
+| Key Pattern | Value Type | TTL | Purpose |
+|------------|------------|-----|---------|
+| `search:{query}` | JSON (Drug[]) | 24h | Search results |
+| `drug:{id}` | JSON (Drug) | 24h | Individual drug details |
+| `mapping:brand:{brand}` | JSON (string) | 7d | Brand → Generic mapping |
+| `mapping:generic:{generic}` | JSON (string[]) | 7d | Generic → Brands mapping |
+| `bpom:all` | JSON (Drug[]) | 6h | Full BPOM dataset |
+
+### 6.2 Two-Tier Caching
+
+**Tier 1: Redis (Application Layer)**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Next.js Server                                          │
+│  ┌─────────────┐     ┌─────────────┐                   │
+│  │ Cache Check │────▶│   Redis     │                   │
+│  └─────────────┘     │  (Upstash)  │                   │
+│         │            └─────────────┘                   │
+│         │ MISS                │ HIT                     │
+│         ▼                     │                         │
+│  ┌──────────────────────────────────────────┐           │
+│  │  Parallel API Fetches                    │           │
+│  │  ├── openFDA ───▶ Normalize ──▶ Cache   │           │
+│  │  ├── RxNorm  ───▶ Normalize ──▶ Cache   │           │
+│  │  └── BPOM   ───▶ Normalize ──▶ Cache     │           │
+│  └──────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────┘
 ```
 
 **Tier 2: Cloudflare Edge Cache (CDN Layer)**
 
-```
-Cloudflare Pages Configuration:
-├── Cache-Control: public, max-age=86400, stale-while-revalidate=3600
-├── Edge Cache TTL: 24 hours
-└── SWR TTL: 1 hour (serve stale while revalidating)
-```
+- Cache the rendered SSR pages at edge locations
+- Reduces load on Next.js serverless functions
+- Serves static-ish content (search results) globally
 
-### 6.2 Cache Invalidation
+### 6.3 Cache Invalidation
 
 | Trigger | Action |
 |---------|--------|
-| **24h TTL expiry** | Automatic revalidation |
-| **API error detected** | Invalidate cache for that query |
-| **Manual refresh** | Protected admin endpoint: `/api/cache/invalidate?tag=openfda` |
-| **New BPOM dataset** | Full cache flush (rare event) |
+| **24h TTL expiry** | Automatic expiration |
+| **API error detected** | Delete specific cache key via Redis DEL |
+| **Manual refresh** | Admin endpoint: `DELETE /api/cache?key=search:{query}` |
+| **New BPOM dataset** | Flush `bpom:*` keys, then repopulate |
+| **RxNorm mapping stale** | 7d TTL auto-refresh |
+
+### 6.4 Redis Environment Variables
+
+```bash
+# .env.local (development)
+REDIS_URL=           # Upstash Redis URL (e.g., https://xxx.upstash.io)
+REDIS_TOKEN=         # Upstash REST Token
+
+# .env.production (Cloudflare Pages)
+REDIS_URL=           # Set in Cloudflare dashboard
+REDIS_TOKEN=         # Set in Cloudflare dashboard
+```
 
 ---
 
@@ -419,10 +492,143 @@ if (!query || query.length < 2) {
 ```bash
 # .env.local (development)
 OPENFDA_API_KEY=           # Optional, for higher rate limits
+REDIS_URL=                 # Upstash Redis URL (e.g., https://xxx.upstash.io)
+REDIS_TOKEN=               # Upstash REST Token
 
-# Cloudflare Pages (production) — set in dashboard
+# .env.production (Cloudflare Pages)
 OPENFDA_API_KEY=           # Required for production (optional for MVP)
+REDIS_URL=                 # Set in Cloudflare dashboard
+REDIS_TOKEN=               # Set in Cloudflare dashboard
 NEXT_PUBLIC_APP_URL=https://medik.pages.dev
+```
+
+## 11. React Component Pattern (Compound Components)
+
+To maintain clean, reusable, and flexible UI code, Medik uses **Compound Component Pattern** heavily across the codebase.
+
+### What is Compound Component Pattern?
+
+A design pattern where multiple components work together to form a complete UI widget. The parent controls the state/logic, and children render specific parts.
+
+**Example: DrugCard**
+
+```typescript
+// Compound component structure
+<DrugCard drug={drug}>
+  <DrugCard.Header>
+    <DrugCard.BrandName />
+    <DrugCard.GenericName />
+    <DrugCard.SourceBadge />
+  </DrugCard.Header>
+  
+  <DrugCard.Body>
+    <DrugCard.Indications />
+    <DrugCard.Dosage />
+    <DrugCard.Warnings />
+  </DrugCard.Body>
+  
+  <DrugCard.Footer>
+    <DrugCard.LastUpdated />
+    <DrugCard.Actions />
+  </DrugCard.Footer>
+</DrugCard>
+```
+
+### Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Flexibility** | Consumers can reorder or omit sub-components |
+| **Encapsulation** | Internal state/logic hidden in parent |
+| **Reusability** | Same compound works in different contexts |
+| **Type Safety** | TypeScript ensures valid sub-component usage |
+| **Clean JSX** | No prop-drilling, declarative structure |
+
+### Implementation Pattern
+
+```typescript
+// DrugCard.tsx
+import { createContext, useContext } from 'react';
+
+interface DrugCardContextType {
+  drug: Drug;
+}
+
+const DrugCardContext = createContext<DrugCardContextType | null>(null);
+
+function useDrugCard() {
+  const context = useContext(DrugCardContext);
+  if (!context) throw new Error('DrugCard.* must be used within <DrugCard>');
+  return context;
+}
+
+// Main container
+interface DrugCardProps {
+  drug: Drug;
+  children: React.ReactNode;
+}
+
+export function DrugCard({ drug, children }: DrugCardProps) {
+  return (
+    <DrugCardContext.Provider value={{ drug }}>
+      <div className="drug-card">{children}</div>
+    </DrugCardContext.Provider>
+  );
+}
+
+// Sub-components
+DrugCard.Header = function Header({ children }: { children: React.ReactNode }) {
+  return <div className="drug-card-header">{children}</div>;
+};
+
+DrugCard.BrandName = function BrandName() {
+  const { drug } = useDrugCard();
+  return <h2 className="brand-name">{drug.brandNames[0]}</h2>;
+};
+
+DrugCard.GenericName = function GenericName() {
+  const { drug } = useDrugCard();
+  return <p className="generic-name">({drug.genericName})</p>;
+};
+
+// ... more sub-components
+```
+
+### Applied to Medik Components
+
+| Component | Sub-Components | Purpose |
+|-----------|-----------------|---------|
+| `SearchBar` | `Input`, `Suggestions`, `ClearButton`, `SearchButton` | Composable search widget |
+| `DrugCard` | `Header`, `BrandName`, `GenericName`, `Indications`, `Dosage`, `Warnings`, `Footer` | Flexible drug display |
+| `DrugDetail` | `Hero`, `ClinicalInfo`, `SourceAttribution`, `Disclaimer`, `Actions` | Full detail view |
+| `Disclaimer` | `Text`, `Icon`, `Toggle` | Reusable disclaimer across pages |
+| `SourceBadge` | `Icon`, `Label` | Attributed source display |
+
+### Folder Structure for Compound Components
+
+```
+src/
+└── components/
+    ├── ui/                      # Primitive components
+    │   ├── button.tsx
+    │   ├── badge.tsx
+    │   └── input.tsx
+    ├── search-bar/              # Compound component (folder pattern)
+    │   ├── index.tsx            # Exports SearchBar + sub-components
+    │   ├── search-bar.tsx       # Main container
+    │   ├── search-input.tsx
+    │   ├── search-suggestions.tsx
+    │   └── search-button.tsx
+    ├── drug-card/               # Compound component
+    │   ├── index.tsx
+    │   ├── drug-card.tsx
+    │   ├── drug-card-header.tsx
+    │   ├── drug-card-body.tsx
+    │   └── drug-card-footer.tsx
+    └── disclaimer/              # Simple compound
+        ├── index.tsx
+        ├── disclaimer-text.tsx
+        └── disclaimer-icon.tsx
 ```
 
 ---

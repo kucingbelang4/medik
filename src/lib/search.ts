@@ -11,6 +11,12 @@ import {
 import { searchBPOM } from './api/bpom';
 import { mapOpenFDAToDrug, mergeDrugs } from './normalize';
 import { rankSearchResults } from './rank';
+import { 
+  getCachedSearch, 
+  setCachedSearch,
+  getCachedDrug,
+  setCachedDrug
+} from './cache';
 
 interface SearchResult {
   status: 'fulfilled' | 'rejected';
@@ -21,12 +27,20 @@ interface SearchResult {
 
 /**
  * Main search function - queries all sources with graceful degradation
+ * Uses Redis cache for performance
  */
 export async function searchDrugs(query: string): Promise<{ drugs: Drug[]; errors: string[] }> {
   const errors: string[] = [];
   
   if (!query.trim()) {
     return { drugs: [], errors };
+  }
+
+  // Check cache first
+  const cached = await getCachedSearch(query);
+  if (cached) {
+    console.log(`Cache hit for query: ${query}`);
+    return { drugs: cached, errors: [] };
   }
 
   // Step 1: Get brand/generic mapping from RxNorm
@@ -83,13 +97,25 @@ export async function searchDrugs(query: string): Promise<{ drugs: Drug[]; error
   const merged = mergeDrugs(allDrugs);
   const ranked = rankSearchResults(merged, query);
 
+  // Cache the results
+  await setCachedSearch(query, ranked);
+
   return { drugs: ranked, errors };
 }
 
 /**
- * Get drug by ID
+ * Get drug by ID - with caching
  */
 export async function getDrugById(id: string): Promise<Drug | null> {
+  // Check cache first
+  const cached = await getCachedDrug(id);
+  if (cached) {
+    console.log(`Cache hit for drug: ${id}`);
+    return cached;
+  }
+
+  let drug: Drug | null = null;
+
   // Try openFDA first (by NDC)
   try {
     const response = await fetch(
@@ -98,7 +124,7 @@ export async function getDrugById(id: string): Promise<Drug | null> {
     if (response.ok) {
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        return mapOpenFDAToDrug(data.results[0]);
+        drug = mapOpenFDAToDrug(data.results[0]);
       }
     }
   } catch (error) {
@@ -106,14 +132,21 @@ export async function getDrugById(id: string): Promise<Drug | null> {
   }
 
   // Try BPOM
-  try {
-    const bpomResults = await searchBPOM(id);
-    return bpomResults.find(d => d.id === id) || null;
-  } catch (error) {
-    console.warn('BPOM lookup failed:', error);
+  if (!drug) {
+    try {
+      const bpomResults = await searchBPOM(id);
+      drug = bpomResults.find(d => d.id === id) || null;
+    } catch (error) {
+      console.warn('BPOM lookup failed:', error);
+    }
   }
 
-  return null;
+  // Cache if found
+  if (drug) {
+    await setCachedDrug(id, drug);
+  }
+
+  return drug;
 }
 
 /**

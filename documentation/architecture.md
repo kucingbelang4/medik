@@ -59,7 +59,7 @@ Next.js SSR (Server)
 |-------|------------|---------|
 | **Framework** | Next.js 14+ (React) with TypeScript | SSR, API routes, UI components |
 | **Language** | TypeScript (strict mode) | Type safety across frontend and server |
-| **Styling** | Tailwind CSS (TBD) | Utility-first CSS, mobile-first |
+| **Styling** | Clinical Minimalism Design System (see `/STITCH/clinical_minimalism/DESIGN.md`) | Medical-focused UI with accessibility |
 | **State Management** | React Server Components + minimal client state | Prefer server-rendered data |
 | **Caching** | Redis (Upstash) + Cloudflare Edge Cache | Two-tier caching for performance |
 | **Hosting** | Cloudflare Pages (Free Tier) | Global CDN, edge deployment, Next.js adapter |
@@ -633,23 +633,145 @@ src/
 
 ---
 
-## 11. Open Questions & Decisions Needed
+## 11. Design System — Clinical Minimalism
+
+Medik uses the **Clinical Minimalism** design system defined in `/STITCH/clinical_minimalism/DESIGN.md`.
+
+### 11.1 Core Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Less Lines** | Replace borders with ambient shadows; use whitespace over dividers |
+| **Clinical Clarity** | Medical-grade legibility; WCAG AA/AAA compliance |
+| **Emotional Calm** | Soft geometry, muted tones, breathable layouts |
+| **Professional Trust** | Authority without being cold or institutional |
+
+### 11.2 Color Palette
+
+| Role | Color | Usage |
+|------|-------|-------|
+| **Medik Blue** `#004ac6` | Primary | Primary actions, links, focus states |
+| **Care Teal** `#006a61` | Secondary | Secondary actions, health indicators, success |
+| **Hospital White** `#faf8ff` | Surface | Main canvas, backgrounds |
+| **Clinical Slate** `#191b23` | On-Surface | Primary text, headings |
+| **Surface Dim** `#d9d9e5` | Variant | Secondary text, borders |
+| **Error Red** `#ba1a1a` | Error | Validation errors, critical warnings |
+
+**Full palette:** See `/STITCH/clinical_minimalism/DESIGN.md` (lines 3-50)
+
+### 11.3 Typography
+
+| Style | Font | Size | Weight | Usage |
+|-------|------|------|--------|-------|
+| **H1** | Inter | 40px | 700 | Page titles |
+| **H2** | Inter | 32px | 600 | Section headers |
+| **H3** | Inter | 24px | 600 | Card titles |
+| **Body LG** | Inter | 18px | 400 | Primary body text |
+| **Body MD** | Inter | 16px | 400 | Secondary body text |
+| **Label Bold** | Inter | 14px | 600 | Button text, labels |
+| **Label SM** | Inter | 12px | 500 | Captions, metadata |
+
+### 11.4 Spacing & Layout
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| **base** | 4px | Baseline grid |
+| **sm** | 8px | Tight spacing |
+| **md** | 16px | Standard spacing |
+| **lg** | 24px | Section spacing |
+| **xl** | 40px | Large gaps |
+
+- **Grid**: Fixed 12-column (desktop), fluid (mobile)
+- **Margins**: Wide to center user focus
+- **Negative space** preferred over physical dividers
+
+### 11.5 Elevation & Depth
+
+| Level | Shadow | Usage |
+|-------|--------|-------|
+| **L0 (Surface)** | None | Main canvas background |
+| **L1 (Card)** | `0px 4px 20px rgba(30, 41, 59, 0.05)` | Primary content containers |
+| **L2 (Interactive)** | `0px 8px 30px rgba(30, 41, 59, 0.1)` | Hovered states, dropdowns |
+| **Focus** | `3px solid #004ac6, 2px offset` | Keyboard navigation (required) |
+
+### 11.6 Shape Language
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| **sm** | 4px | Small badges, tags |
+| **DEFAULT** | 8px | Buttons, inputs |
+| **md** | 12px | Medium containers |
+| **lg** | 16px | Cards, panels |
+| **xl** | 24px | Large containers |
+| **full** | 9999px | Pills, avatars |
+
+### 11.7 Component Guidelines
+
+**Cards:**
+- No borders
+- Level 1 ambient shadow only
+- Generous padding (min 24px)
+- Rounded corners (lg = 16px)
+
+**Buttons:**
+- Medik Blue solid fill (primary)
+- Care Teal ghost style (secondary)
+- 8px rounded corners
+- Subtle hover transitions
+
+**Input Fields:**
+- Hospital White background (slightly dimmer than surface)
+- No borders unless error (soft red) or focus
+- "Well" effect for depth
+
+**Lists:**
+- Zebra striping at very low opacity (no horizontal lines)
+- Alternating row backgrounds for "less lines" aesthetic
+
+### 11.8 Accessibility (A11Y)
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Focus rings | 3px solid Medik Blue, 2px offset on all interactive elements |
+| Color contrast | WCAG AA minimum (4.5:1 for text) |
+| Icons | Always paired with text labels or ARIA descriptions |
+| Touch targets | Minimum 44x44px on mobile |
+
+### 11.9 Design Reference Files
+
+```
+STITCH/
+├── clinical_minimalism/
+│   └── DESIGN.md                 # Full design system specification
+├── medik_simplified_search_results/
+│   ├── screen.png               # Visual mockup
+│   └── code.html                # Implementation reference
+└── medik_simplified_search_portal/
+    ├── screen.png               # Visual mockup
+    └── code.html                # Implementation reference
+```
+
+---
+
+## 12. Open Questions & Decisions Needed
 
 | # | Question | Status | Priority |
 |---|----------|--------|----------|
 | 1 | BPOM API confirmed accessible? | Pending investigation | High |
-| 2 | Tailwind CSS or vanilla CSS? | Decision needed | Medium |
-| 3 | Internationalization library (next-intl, react-i18next)? | Decision needed | Medium |
-| 4 | Auth for admin cache invalidation endpoint? | Decision needed | Low |
-| 5 | Analytics tool (Plausible, Umami, none)? | Decision needed | Low |
+| 2 | Internationalization library (next-intl, react-i18next)? | Decision needed | Medium |
+| 3 | Auth for admin cache invalidation endpoint? | Decision needed | Low |
+| 4 | Analytics tool (Plausible, Umami, none)? | Decision needed | Low |
+
+**Design System**: Confirmed via `/STITCH/clinical_minimalism/DESIGN.md` — Clinical Minimalism
 
 ---
 
-## 12. Revision History
+## 13. Revision History
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | May 8, 2026 | Engineering Team | Initial architecture draft |
+| 1.1 | May 8, 2026 | Engineering Team | Added Redis caching, compound components, design system |
 
 ---
 

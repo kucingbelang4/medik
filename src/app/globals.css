@@ -1,506 +1,91 @@
-/* Clinical Minimalism Design System */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* CSS Variables */
+/* Custom properties for design tokens */
 :root {
-  /* Primary Colors */
-  --medik-blue: #004ac6;
-  --care-teal: #006a61;
-  --trust-green: #34a853;
-  --caution-yellow: #fbbc04;
-  --alert-red: #ea4335;
+  /* Surfaces */
+  --surface: #faf8ff;
+  --surface-dim: #d9d9e5;
+  --surface-bright: #faf8ff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f3f3fe;
+  --surface-container: #ededf9;
+  --surface-container-high: #e7e7f3;
+  --surface-container-highest: #e1e2ed;
   
-  /* Neutrals */
-  --hospital-white: #faf8ff;
-  --clinical-gray: #f7f9fc;
-  --light-gray: #e8eef5;
-  --medium-gray: #94a3b8;
-  --dark-gray: #334155;
+  /* Primary (Medik Blue) */
+  --primary: #004ac6;
+  --on-primary: #ffffff;
+  --primary-container: #2563eb;
+  --on-primary-container: #eeefff;
+  --primary-fixed: #dbe1ff;
+  --primary-fixed-dim: #b4c5ff;
+  --on-primary-fixed: #00174b;
+  --on-primary-fixed-variant: #003ea8;
+  --surface-tint: #0053db;
   
-  /* Shadows */
-  --shadow-level-1: 0px 4px 20px rgba(30, 41, 59, 0.05);
-  --shadow-level-2: 0px 8px 30px rgba(30, 41, 59, 0.08);
-  --shadow-level-3: 0px 12px 40px rgba(30, 41, 59, 0.12);
+  /* Secondary (Care Teal) */
+  --secondary: #006a61;
+  --on-secondary: #ffffff;
+  --secondary-container: #86f2e4;
+  --on-secondary-container: #006f66;
+  --secondary-fixed: #89f5e7;
+  --secondary-fixed-dim: #6bd8cb;
+  --on-secondary-fixed: #00201d;
+  --on-secondary-fixed-variant: #005049;
   
-  /* Spacing */
-  --spacing-unit: 4px;
+  /* Tertiary */
+  --tertiary: #943700;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #bc4800;
+  --on-tertiary-container: #ffede6;
+  --tertiary-fixed: #ffdbcd;
+  --tertiary-fixed-dim: #ffb596;
+  --on-tertiary-fixed: #360f00;
+  --on-tertiary-fixed-variant: #7d2d00;
   
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  /* Error */
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+  
+  /* Text */
+  --on-surface: #191b23;
+  --on-surface-variant: #434655;
+  --inverse-surface: #2e3039;
+  --inverse-on-surface: #f0f0fb;
+  
+  /* Outlines */
+  --outline: #737686;
+  --outline-variant: #c3c6d7;
+  --surface-variant: #e1e2ed;
+  
+  /* Background */
+  --background: #faf8ff;
+  --on-background: #191b23;
+  
+  /* Focus Ring */
+  --focus-ring: 3px solid var(--primary);
+  --focus-offset: 2px;
 }
 
-/* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Base styles */
+html {
+  font-family: var(--font-sans);
 }
 
-/* Body */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--hospital-white);
-  color: var(--dark-gray);
-  line-height: 1.6;
-}
-
-/* Focus Styles */
-*:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 74, 198, 0.3);
-}
-
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  line-height: 1.3;
-  font-weight: 600;
-}
-
-/* UI Primitives */
-
-/* Button */
-.medik-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-}
-
-.medik-button--primary {
-  background-color: var(--medik-blue);
-  color: white;
-}
-
-.medik-button--primary:hover {
-  background-color: #003999;
-}
-
-.medik-button--secondary {
-  background-color: var(--care-teal);
-  color: white;
-}
-
-.medik-button--secondary:hover {
-  background-color: #005a52;
-}
-
-.medik-button--ghost {
-  background-color: transparent;
-  border: 1px solid var(--medik-blue);
-  color: var(--medik-blue);
-}
-
-.medik-button--ghost:hover {
-  background-color: var(--medik-blue);
-  color: white;
-}
-
-.medik-button--sm {
-  padding: 8px 16px;
-  font-size: 14px;
-}
-
-.medik-button--md {
-  padding: 12px 24px;
-  font-size: 16px;
-}
-
-.medik-button--lg {
-  padding: 16px 32px;
-  font-size: 18px;
-}
-
-/* Input */
-.medik-input {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: white;
-  box-shadow: var(--shadow-level-1);
-  font-size: 16px;
-  transition: box-shadow 0.2s;
-}
-
-.medik-input:focus {
-  box-shadow: var(--shadow-level-2);
-}
-
-/* Card */
-.medik-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-level-1);
-  padding: 24px;
-  margin-bottom: 16px;
-}
-
-.medik-card--no-border {
-  border: none;
-}
-
-/* Badge */
-.medik-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.medik-badge.source-openfda {
-  background-color: #e8f4fd;
-  color: #0056b3;
-}
-
-.medik-badge.source-rxnorm {
-  background-color: #e6f4ea;
-  color: #137333;
-}
-
-.medik-badge.source-bpom {
-  background-color: #fef7e0;
-  color: #b05a00;
-}
-
-/* Search Bar Styles */
-.search-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: white;
-  box-shadow: var(--shadow-level-1);
-  font-size: 16px;
-  transition: box-shadow 0.2s;
-}
-
-.search-input:focus {
-  box-shadow: var(--shadow-level-2);
-}
-
-.search-button {
-  padding: 12px 24px;
-  background-color: var(--medik-blue);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.search-button:hover {
-  background-color: #003999;
-}
-
-.clear-button {
-  padding: 8px 12px;
-  background: transparent;
-  border: 1px solid var(--light-gray);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-/* Drug Card Styles */
-.drug-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-level-1);
-  padding: 24px;
-  margin-bottom: 16px;
-}
-
-.drug-card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
-}
-
-.drug-card-brand-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--dark-gray);
-}
-
-.drug-card-generic-name {
-  font-size: 14px;
-  color: var(--medium-gray);
-}
-
-.drug-card-source-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-  width: fit-content;
-}
-
-.drug-card-source-badge.source-openfda {
-  background-color: #e8f4fd;
-  color: #0056b3;
-}
-
-.drug-card-source-badge.source-rxnorm {
-  background-color: #e6f4ea;
-  color: #137333;
-}
-
-.drug-card-source-badge.source-bpom {
-  background-color: #fef7e0;
-  color: #b05a00;
-}
-
-.drug-card-body {
-  margin-bottom: 16px;
-}
-
-.drug-card-section {
-  margin-bottom: 12px;
-}
-
-.drug-card-section strong {
-  display: block;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: var(--medium-gray);
-  margin-bottom: 4px;
-}
-
-.drug-card-section.warnings strong {
-  color: var(--alert-red);
-}
-
-.drug-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid var(--light-gray);
-}
-
-.drug-card-last-updated {
-  font-size: 12px;
-  color: var(--medium-gray);
-}
-
-.drug-card-action {
-  padding: 8px 16px;
-  background-color: transparent;
-  border: 1px solid var(--medik-blue);
-  border-radius: var(--radius-md);
-  color: var(--medik-blue);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.drug-card-action:hover {
-  background-color: var(--medik-blue);
-  color: white;
-}
-
-/* Drug Detail Styles */
-.drug-detail {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-.drug-detail-hero {
-  text-align: center;
-  padding: 40px 0;
-  border-bottom: 1px solid var(--light-gray);
-  margin-bottom: 24px;
-}
-
-.drug-detail-brand-name {
-  font-size: 32px;
-  color: var(--dark-gray);
-  margin-bottom: 8px;
-}
-
-.drug-detail-generic-name {
-  font-size: 20px;
-  color: var(--medium-gray);
-  margin-bottom: 16px;
-}
-
-.drug-detail-source-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.drug-detail-clinical {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-level-1);
-  padding: 24px;
-}
-
-.clinical-section {
-  margin-bottom: 16px;
-}
-
-.clinical-section summary {
-  font-weight: 600;
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.clinical-section.warnings summary {
-  color: var(--alert-red);
-}
-
-.clinical-section p {
-  padding: 12px;
-  background-color: var(--clinical-gray);
-  border-radius: var(--radius-sm);
-  margin-top: 8px;
-}
-
-.drug-detail-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.drug-detail-action {
-  flex: 1;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.drug-detail-action:first-child {
-  background-color: var(--medik-blue);
-  color: white;
-  border: none;
-}
-
-.drug-detail-action:last-child {
-  background-color: transparent;
-  border: 1px solid var(--medik-blue);
-  color: var(--medik-blue);
-}
-
-/* Disclaimer Styles */
-.disclaimer {
-  background-color: var(--caution-yellow);
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-}
-
-.disclaimer-text {
-  font-size: 14px;
-  color: var(--dark-gray);
-}
-
-.disclaimer-icon {
-  width: 24px;
-  height: 24px;
-  color: var(--alert-red);
-}
-
-/* Source Badges */
-.source-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.source-badge.openFDA {
-  background-color: #e8f4fd;
-  color: #0056b3;
-}
-
-.source-badge.RxNorm {
-  background-color: #e6f4ea;
-  color: #137333;
-}
-
-.source-badge.BPOM {
-  background-color: #fef7e0;
-  color: #b05a00;
-}
-
-/* Utilities */
-.fixed {
-  position: fixed;
-}
-
-.bottom-0 {
-  bottom: 0;
-}
-
-.left-0 {
-  left: 0;
-}
-
-.right-0 {
-  right: 0;
-}
-
-.z-50 {
-  z-index: 50;
-}
-
-.text-sm {
-  font-size: 14px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.max-w-4xl {
-  max-width: 896px;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.p-4 {
-  padding: 16px;
-}
-
-.bg-white\/90 {
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-}
-
-.border-t {
-  border-top: 1px solid var(--light-gray);
-}
-
-.pb-20 {
-  padding-bottom: 80px;
+  background-color: var(--background);
+  color: var(--on-surface);
+}
+
+/* Focus styles - using CSS custom properties */
+*:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 var(--focus-offset) var(--surface),
+    0 0 0 calc(var(--focus-offset) + 3px) var(--primary);
 }

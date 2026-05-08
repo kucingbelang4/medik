@@ -16,10 +16,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={inter.className} style={{ backgroundColor: '#faf8ff' }}>
+      <body className={inter.className}>
         {/* Disclaimer always visible at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-4 border-t z-50">
-          <div className="max-w-4xl mx-auto text-sm text-center" style={{ color: '#334155' }}>
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-t border-outline-variant p-4">
+          <div className="max-w-4xl mx-auto text-sm text-center text-on-surface">
             Informasi ini hanya untuk tujuan edukasi. Ini BUKAN nasihat medis. 
             Selalu konsultasikan dengan dokter atau apoteker sebelum mengonsumsi obat apapun. 
             Dalam keadaan darurat, hubungi layanan darurat setempat.

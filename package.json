@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
+    "@tailwindcss/postcss": "^4.2.4",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.6.1",
@@ -31,14 +32,17 @@
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@vitest/coverage-v8": "^1.2.2",
+    "autoprefixer": "^10.5.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",
     "jsdom": "^24.0.0",
     "playwright": "^1.59.1",
+    "postcss": "^8.5.14",
     "pre-commit": "^1.2.2",
     "prettier": "^3.2.4",
     "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.4",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
   }

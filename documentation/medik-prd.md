@@ -48,6 +48,26 @@ This stack leverages Next.js SSR as the primary backend for API orchestration, e
 
 ---
 
+## 1.5 Design System — Clinical Minimalism
+
+Medik employs the **Clinical Minimalism** design system defined in `STITCH/clinical_minimalism/DESIGN.md`, prioritizing clarity, efficiency, and emotional calm for both patients and healthcare providers. Key characteristics:
+
+- **Less Lines**: Replaces borders with ambient shadows; uses whitespace over visual dividers
+- **Clinical Clarity**: Medical-grade legibility (Inter font); WCAG AA/AAA compliance  
+- **Emotional Calm**: Soft geometry, muted tones, breathable layouts
+- **Professional Trust**: Authority without being cold or institutional
+
+**Core Elements:**
+- **Color Palette**: Medik Blue (#004ac6) primary, Care Teal (#006a61) secondary, Hospital White (#faf8ff) surface, Clinical Slate (#191b23) text
+- **Typography**: Inter font family with hierarchical scaling (H1: 40px/700, Body: 16px/400)
+- **Spacing**: 4px baseline grid; generous margins to focus user attention
+- **Components**: Borderless cards with Level 1 shadow; Compound component pattern for reusability
+- **Accessibility**: Mandatory focus rings, WCAG contrast compliance, touch targets ≥44x44px
+
+This design system ensures Medik feels trustworthy, approachable, and clinically accurate while minimizing cognitive load during health information consumption.
+
+---
+
 ## 2. User Personas
 
 ### 2.1 Persona A: "The Cautious Self-Medicator"

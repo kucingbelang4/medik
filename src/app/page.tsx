@@ -1,13 +1,11 @@
 import Link from 'next/link';
-import SearchBar from '@/components/search-bar/search-bar';
-import SearchInput from '@/components/search-bar/search-input';
-import SearchButton from '@/components/search-bar/search-button';
+
 export default function Home() {
   return (
     <>
-      {/* Disclaimer - fixed at bottom - from DESIGN.md */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-t border-outline-variant p-4">
-        <div className="max-w-4xl mx-auto text-center text-sm" style={{ color: 'var(--on-surface)' }}>
+      {/* Disclaimer - fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-sm border-t border-outline-variant py-sm">
+        <div className="max-w-7xl mx-auto text-center font-label-sm text-label-sm text-on-surface-variant px-margin">
           Informasi ini hanya untuk tujuan edukasi. Ini BUKAN nasihat medis. 
           Selalu konsultasikan dengan dokter atau apoteker sebelum mengonsumsi obat apapun. 
           Dalam keadaan darurat, hubungi layanan darurat setempat.
@@ -15,203 +13,94 @@ export default function Home() {
       </div>
       
       {/* Main content with padding for fixed disclaimer */}
-      <div className="pb-20" style={{ backgroundColor: 'var(--background)' }}>
-        {/* Hero Section - Clinical Minimalism: generous whitespace */}
-        <section className="flex flex-col items-center justify-center px-8 py-20" style={{ minHeight: 'calc(100vh - 80px)' }}>
-          <div className="text-center" style={{ maxWidth: '672px', width: '100%' }}>
-            {/* Medik Title - h1: 40px, bold, -0.02em letterSpacing */}
-            <h1 className="font-bold mb-4" style={{ 
-              fontSize: '40px', 
-              lineHeight: '1.2', 
-              letterSpacing: '-0.02em',
-              color: 'var(--primary)'
-            }}>
-              Medik
-            </h1>
+      <div className="pb-20 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        {/* Hero Section */}
+        <section className="px-margin pt-24 pb-32 max-w-5xl mx-auto text-center flex-1 flex flex-col justify-center">
+          <h1 className="font-h1 text-h1 text-on-surface mb-md">
+            How can we help you today?
+          </h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-2xl mx-auto">
+            Access clinical information on medicines, conditions, and health services through our professional-grade search portal.
+          </p>
+          
+          {/* Search Bar - rounded-full with internal icon */}
+          <div className="relative max-w-3xl mx-auto w-full">
+            <div className="flex items-center bg-surface-container-low rounded-full px-lg py-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 transition-all">
+              {/* Search Icon */}
+              <svg className="w-6 h-6 text-outline mr-md shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 15a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              
+              {/* Input */}
+              <input 
+                placeholder="Search medicines, symptoms, or illnesses..." 
+                name="q"
+                className="bg-transparent border-none focus:ring-0 w-full font-body-lg text-body-lg text-on-surface placeholder:text-outline-variant"
+                style={{ outline: 'none' }}
+              />
+              
+              {/* Search Button - pill shaped */}
+              <button 
+                type="submit"
+                className="bg-primary text-on-primary font-label-bold text-label-bold px-xl py-md rounded-full active:scale-95 transition-transform shadow-lg shadow-primary/20 hover:opacity-90"
+              >
+                Search
+              </button>
+            </div>
             
-            {/* Subtitle - body-lg: 18px, color: on-surface-variant */}
-            <p className="mb-2" style={{ 
-              fontSize: '18px', 
-              lineHeight: '1.6',
-              color: 'var(--on-surface-variant)'
-            }}>
-              Database Informasi Obat Indonesia
-            </p>
-            
-            {/* Description - body-md: 16px */}
-            <p className="mb-8" style={{ 
-              fontSize: '16px', 
-              lineHeight: '1.6',
-              color: 'var(--on-surface-variant)',
-              maxWidth: '576px',
-              margin: '0 auto 32px'
-            }}>
-              Search for drug information by symptom, illness, or drug name. 
-              Get detailed information from openFDA, RxNorm, and BPOM.
-            </p>
-            
-            {/* Search Form - "well effect" input (no border, slightly darker bg) */}
-            <form 
-              className="mx-auto"
-              style={{ maxWidth: '448px', width: '100%', marginBottom: '32px' }}
-              action="/search"
-              method="get"
-            >
-              <div className="flex gap-2">
-                {/* Input - "well effect": no border, bg-surface-container-low */}
-                <input 
-                  placeholder="Cari berdasarkan gejala, penyakit, atau nama obat..." 
-                  name="q"
-                  className="flex-1 px-4 py-3 outline-none transition-colors"
-                  style={{ 
-                    backgroundColor: 'var(--surface-container-low)',
-                    borderRadius: 'var(--radius-sm)', // 8px
-                    fontSize: '16px',
-                    lineHeight: '1.6',
-                    color: 'var(--on-surface)',
-                    boxShadow: 'var(--shadow-level-1)',
-                  }}
-                />
-                {/* Button - Primary: Medik Blue, 8px rounded */}
-                <button 
-                  type="submit"
-                  className="px-6 py-3 font-semibold text-white transition-colors hover:opacity-90"
-                  style={{ 
-                    backgroundColor: 'var(--primary)',
-                    color: 'var(--on-primary)',
-                    borderRadius: 'var(--radius-sm)', // 8px
-                    fontSize: '16px',
-                    fontWeight: '600'
-                  }}
+            {/* Trending Section */}
+            <div className="mt-lg flex justify-center items-center gap-sm flex-wrap">
+              <span className="font-label-sm text-label-sm text-on-surface-variant">Trending:</span>
+              {['Ibuprofen', 'Seasonal Allergies', 'Diabetes Management'].map((term) => (
+                <Link 
+                  key={term}
+                  href={`/search?q=${encodeURIComponent(term)}`}
+                  className="font-label-sm text-label-sm text-primary hover:underline"
                 >
-                  Cari
-                </button>
-              </div>
-            </form>
-            
-            {/* Popular Searches - label-sm: 12px, semibold, 0.04em letterSpacing */}
-            <div className="text-left">
-              <h3 className="font-semibold mb-3" style={{ 
-                fontSize: '12px', 
-                lineHeight: '1.2',
-                letterSpacing: '0.04em',
-                color: 'var(--on-surface-variant)',
-                textTransform: 'uppercase'
-              }}>
-                Pencarian Populer / Popular Searches
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {['Paracetamol', 'Amoxicillin', 'Ibuprofen', 'Omeprazole', 'Metformin', 'Aspirin'].map((drug) => (
-                  <Link 
-                    key={drug}
-                    href={`/search?q=${drug}`}
-                    className="px-4 py-2 transition-colors hover:opacity-80"
-                    style={{ 
-                      backgroundColor: 'var(--primary-fixed)',
-                      color: 'var(--on-primary-fixed)',
-                      borderRadius: '9999px', // full rounded
-                      fontSize: '14px',
-                      fontWeight: '500'
-                    }}
-                  >
-                    {drug}
-                  </Link>
-                ))}
-              </div>
+                  {term}
+                </Link>
+              ))}
             </div>
           </div>
         </section>
         
-        {/* Features Section - Cards: no borders, shadow-level-1, generous padding */}
-        <section style={{ backgroundColor: 'var(--surface-container-lowest)' }}>
-          <div className="mx-auto px-8 py-12" style={{ maxWidth: '896px' }}>
-            <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: '32px' }}>
-              {/* Feature 1 */}
-              <div className="text-center" style={{ padding: '24px' }}>
-                <div className="mx-auto mb-4 flex items-center justify-center" style={{ 
-                  width: '48px', 
-                  height: '48px',
-                  backgroundColor: 'var(--primary-fixed)',
-                  borderRadius: 'var(--radius-md)', // 12px
-                }}>
-                  {/* Search Icon */}
-                  <svg style={{ width: '24px', height: '24px', color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 15a4 4 0 11-8 0 4 4 0 018 0z" />
+        {/* Simplified Grid - 3 columns */}
+        <section className="px-margin py-xl max-w-7xl mx-auto mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+            {/* Medicine Search Card - spans 2 cols */}
+            <div className="md:col-span-2 bg-surface-container-lowest p-xl rounded-xl shadow-[0_4px_20px_rgba(30,41,59,0.05)] hover:shadow-lg transition-shadow group cursor-pointer flex flex-col md:flex-row items-center gap-xl">
+              <div className="flex-1">
+                <div className="bg-primary-container text-on-primary-container inline-flex p-sm rounded-lg mb-md">
+                  {/* Medication Icon - using SVG instead of Material Symbols */}
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3 0l-.318-.158a6 6 0 00-3.86-.517l-2.387.477a2 2 0 00-1.022.547m0 0a2 2 0 01.698.698l.252.126a10.99 10.99 0 01-3.86-.517l-2.387-.477a2 2 0 00-1.022.547m0 0h-.001M5 19h14" />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-1" style={{ 
-                  fontSize: '16px', 
-                  lineHeight: '1.4',
-                  color: 'var(--on-surface)'
-                }}>
-                  Cari Obat
-                </h3>
-                <p style={{ 
-                  fontSize: '14px', 
-                  lineHeight: '1.6',
-                  color: 'var(--on-surface-variant)'
-                }}>
-                  Search by symptom, illness, or drug name
+                <h2 className="font-h2 text-h2 mb-sm">Search Medicines</h2>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
+                  Comprehensive database of clinical pharmacology, dosages, and contraindications verified by medical boards.
                 </p>
-              </div>
-              
-              {/* Feature 2 */}
-              <div className="text-center" style={{ padding: '24px' }}>
-                <div className="mx-auto mb-4 flex items-center justify-center" style={{ 
-                  width: '48px', 
-                  height: '48px',
-                  backgroundColor: 'var(--primary-fixed)',
-                  borderRadius: 'var(--radius-md)',
-                }}>
-                  {/* Info Icon */}
-                  <svg style={{ width: '24px', height: '24px', color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <button className="text-primary font-label-bold text-label-bold flex items-center gap-xs group-hover:gap-sm transition-all">
+                  Browse A-Z Guide 
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m-7-7l7 7m-7-7V20m6 0v-4m0 4h-4" />
                   </svg>
-                </div>
-                <h3 className="font-semibold mb-1" style={{ 
-                  fontSize: '16px', 
-                  lineHeight: '1.4',
-                  color: 'var(--on-surface)'
-                }}>
-                  Informasi Lengkap
-                </h3>
-                <p style={{ 
-                  fontSize: '14px', 
-                  lineHeight: '1.6',
-                  color: 'var(--on-surface-variant)'
-                }}>
-                  Complete drug information from trusted sources
-                </p>
+                </button>
               </div>
-              
-              {/* Feature 3 */}
-              <div className="text-center" style={{ padding: '24px' }}>
-                <div className="mx-auto mb-4 flex items-center justify-center" style={{ 
-                  width: '48px', 
-                  height: '48px',
-                  backgroundColor: 'var(--primary-fixed)',
-                  borderRadius: 'var(--radius-md)',
-                }}>
-                  {/* Heart Icon */}
-                  <svg style={{ width: '24px', height: '24px', color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
+              <div className="w-full md:w-64 h-48 rounded-xl overflow-hidden">
+                <div className="w-full h-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                  Drug Image Placeholder
                 </div>
-                <h3 className="font-semibold mb-1" style={{ 
-                  fontSize: '16px', 
-                  lineHeight: '1.4',
-                  color: 'var(--on-surface)'
-                }}>
-                  Data Indonesia
-                </h3>
-                <p style={{ 
-                  fontSize: '14px', 
-                  lineHeight: '1.6',
-                  color: 'var(--on-surface-variant)'
-                }}>
-                  Includes BPOM registered medications
-                </p>
               </div>
+            </div>
+            
+            {/* Clinical Standards Badge */}
+            <div className="bg-tertiary-fixed text-on-tertiary-fixed p-xl rounded-xl shadow-[0_4px_20px_rgba(30,41,59,0.05)] flex flex-col justify-center">
+              <span className="font-label-bold text-label-bold uppercase tracking-widest opacity-70 mb-sm">Verified Reliability</span>
+              <h3 className="font-h3 text-h3 mb-md">Clinical Standards</h3>
+              <p className="font-body-md text-body-md opacity-90">
+                All Medik content is reviewed monthly by our certified Medical Board of directors to ensure absolute clinical accuracy.
+              </p>
             </div>
           </div>
         </section>

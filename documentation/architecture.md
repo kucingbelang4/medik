@@ -1,0 +1,778 @@
+# Medik — Technical Architecture Document
+
+**Version:** 1.0  
+**Date:** May 8, 2026  
+**Status:** Draft  
+**Owner:** Engineering Team  
+**Repository:** kucingbelang4/medik  
+**Related Documents:** [PRD](./medik-prd.md)
+
+---
+
+## 1. Architecture Overview
+
+Medik is a Next.js SSR application where all third-party API requests, data processing, normalization, and caching are handled server-side. This design:
+
+- **Secures credentials**: API keys never reach the client
+- **Enables caching**: Server-side caching reduces third-party API rate limit pressure
+- **Normalizes data**: Unifies disparate source schemas before reaching the client
+- **Improves performance**: Cloudflare Edge CDN caches responses globally
+
+**High-Level Data Flow:**
+
+```
+Browser (Client)
+  │
+  ▼  Search Query: "sakit kepala" or "Panadol"
+Next.js SSR (Server)
+  │
+  ├──▶ Check Next.js Server Cache
+  │       │
+  │       ├── HIT ───────────────────────────────────▶ Return cached response
+  │       │
+  │       └── MISS
+  │               │
+  │               ▼
+  │       ┌──────────────────────────────────────────┐
+  │       │  Parallel API Fetches                     │
+  │       │  ├── openFDA (clinical data)              │
+  │       │  ├── RxNorm (brand→generic mapping)      │
+  │       │  └── BPOM (Indonesian brands)            │
+  │       └──────────────────────────────────────────┘
+  │               │
+  │               ▼
+  │       Data Normalization Layer
+  │       (Unify to Drug schema, map brands)
+  │               │
+  │               ▼
+  │       Store in Next.js Server Cache (24h SWR)
+  │               │
+  │               ▼
+  └──────────────▶ Return unified response to client
+```
+
+---
+
+## 2. Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Framework** | Next.js 14+ (React) with TypeScript | SSR, API routes, UI components |
+| **Language** | TypeScript (strict mode) | Type safety across frontend and server |
+| **Styling** | Clinical Minimalism Design System (see `/STITCH/clinical_minimalism/DESIGN.md`) | Medical-focused UI with accessibility |
+| **State Management** | React Server Components + minimal client state | Prefer server-rendered data |
+| **Caching** | Redis (Upstash) + Cloudflare Edge Cache | Two-tier caching for performance |
+| **Hosting** | Cloudflare Pages (Free Tier) | Global CDN, edge deployment, Next.js adapter |
+| **Data Sources** | openFDA, RxNorm, BPOM CekBPOM API | Drug information |
+
+---
+
+## 3. Project Structure
+
+```
+medik/
+├── src/
+│   ├── app/                          # Next.js App Router
+│   │   ├── layout.tsx                # Root layout (disclaimer header/footer)
+│   │   ├── page.tsx                 # Homepage (search bar)
+│   │   ├── search/
+│   │   │   └── page.tsx             # Search results (SSR)
+│   │   └── drug/
+│   │       └── [id]/
+│   │           └── page.tsx         # Drug detail page (SSR)
+│   │
+│   ├── components/                   # React components (Compound Pattern)
+│   │   ├── ui/                      # Primitive components (button, badge, input)
+│   │   │   ├── button.tsx
+│   │   │   ├── badge.tsx
+│   │   │   └── input.tsx
+│   │   ├── search-bar/              # Compound component (folder pattern)
+│   │   │   ├── index.tsx            # Exports SearchBar + sub-components
+│   │   │   ├── search-bar.tsx       # Main container
+│   │   │   ├── search-input.tsx
+│   │   │   ├── search-suggestions.tsx
+│   │   │   └── search-button.tsx
+│   │   ├── drug-card/               # Compound component
+│   │   │   ├── index.tsx
+│   │   │   ├── drug-card.tsx
+│   │   │   ├── drug-card-header.tsx
+│   │   │   ├── drug-card-body.tsx
+│   │   │   └── drug-card-footer.tsx
+│   │   ├── drug-detail/             # Full detail compound
+│   │   │   ├── index.tsx
+│   │   │   ├── drug-detail-hero.tsx
+│   │   │   ├── drug-detail-clinical.tsx
+│   │   │   └── drug-detail-actions.tsx
+│   │   └── disclaimer/              # Simple compound
+│   │       ├── index.tsx
+│   │       ├── disclaimer-text.tsx
+│   │       └── disclaimer-icon.tsx
+│   │
+│   ├── lib/                         # Server-side logic
+│   │   ├── api/
+│   │   │   ├── openfda.ts           # openFDA API client
+│   │   │   ├── rxnorm.ts            # RxNorm API client
+│   │   │   └── bpom.ts              # BPOM API client
+│   │   ├── cache.ts                 # Redis cache utilities
+│   │   ├── normalize.ts            # Data normalization → unified Drug schema
+│   │   ├── rank.ts                  # Search result ranking algorithm
+│   │   └── types.ts                 # Shared TypeScript interfaces
+│   │
+│   └── i18n/                        # Internationalization
+│       ├── id.json                  # Bahasa Indonesia translations
+│       └── en.json                  # English translations
+│
+├── public/                          # Static assets
+│   └── icons/                       # App icons, favicon
+│
+├── tests/                           # Test files
+│   ├── unit/
+│   └── e2e/
+│
+├── documentation/                   # Project docs
+│   ├── medik-prd.md                # Product Requirements Document
+│   ├── architecture.md             # This document
+│   └── api-spec.md                 # API integration spec (future)
+│
+├── next.config.ts                  # Next.js configuration
+├── tailwind.config.ts              # Tailwind configuration
+├── tsconfig.json                   # TypeScript configuration
+└── package.json
+```
+
+---
+
+## 4. Data Architecture
+
+### 4.1 Unified Drug Schema
+
+All third-party data is normalized to this schema:
+
+```typescript
+interface Drug {
+  // Identity
+  id: string;                    // Generated: SHA256(source + source_id)
+  genericName: string;           // e.g., "Paracetamol"
+  brandNames: string[];          // e.g., ["Panadol", "Bodrex", "Sanmol"]
+  sourceIds: Record<Source, string>; // Original IDs from each source
+
+  // Clinical Data
+  indications: string[];         // Symptoms/conditions treated
+  dosage: string;                // Formatted dosage information
+  warnings: string[];            // Warnings and precautions
+  contraindications: string[];   // When NOT to use
+  interactions: string[];        // Drug-drug interactions
+
+  // Metadata
+  sources: Source[];             // ["openFDA", "BPOM"]
+  sourceUrls: Record<Source, string>; // Links to original records
+  lastUpdated: string;          // ISO date of most recent data
+  language: 'id' | 'en';        // Primary language of this entry
+}
+
+type Source = 'openFDA' | 'RxNorm' | 'BPOM';
+```
+
+### 4.2 Normalization Pipeline
+
+```
+Raw API Responses (openFDA JSON, RxNorm JSON, BPOM JSON)
+    │
+    ▼
+RxNorm Mapping
+    │
+    ├── Brand search ("Panadol") → Generic name ("Paracetamol") via RxNorm
+    │       └── Then search openFDA by generic name
+    │
+    ├── Generic search ("Paracetamol") → Brand names via RxNorm
+    │       └── Also fetch BPOM for Indonesian brands
+    │
+    └── Symptom search ("sakit kepala") → Indications field in openFDA
+            └── Search: indications:"headache" OR indications:"sakit kepala"
+    │
+    ▼
+Schema Mapping
+    │
+    ├── openFDA fields → Drug.indications, .dosage, .warnings, .interactions
+    ├── RxNorm fields → Drug.genericName, .brandNames (US)
+    └── BPOM fields → Drug.brandNames (Indonesian), .sourceIds.BPOM
+    │
+    ▼
+Merge & Dedupe
+    │
+    ├── Combine brand names across sources (dedupe)
+    ├── Merge indications (union of all sources)
+    └── Generate unified Drug.id
+    │
+    ▼
+Unified Drug[]
+```
+
+---
+
+## 5. API Integration
+
+### 5.1 openFDA API
+
+**Purpose**: Clinical data (dosage, warnings, indications, interactions)  
+**Base URL**: `https://api.fda.gov/drug/label.json`  
+**Auth**: None (free, rate-limited)  
+**Rate Limit**: ~1,000 requests/day, 240/hour
+
+**Search Strategies:**
+
+```typescript
+// By indication (symptom search)
+GET /drug/label.json?search=indications_and_usage:"headache"+OR+indications_and_usage:"sakit+kepala"&limit=10
+
+// By generic name (brand or generic search)
+GET /drug/label.json?search=openfda.generic_name:"acetaminophen"&limit=10
+
+// By brand name
+GET /drug/label.json?search=openfda.brand_name:"panadol"&limit=10
+```
+
+**Field Mapping:**
+
+| openFDA Field | Drug Field |
+|--------------|------------|
+| `indications_and_usage` | `indications` |
+| `dosage_and_administration` | `dosage` |
+| `warnings` | `warnings` |
+| `contraindications` | `contraindications` |
+| `drug_interactions` | `interactions` |
+| `openfda.generic_name` | `genericName` |
+| `openfda.brand_name` | `brandNames` |
+| `openfda.product_ndc` | `sourceIds.openFDA` |
+
+### 5.2 RxNorm API
+
+**Purpose**: Normalize brand↔generic names across US and Indonesian brands  
+**Base URL**: `https://rxnav.nlm.nih.gov/REST/`  
+**Auth**: None (free, NIH)  
+**Rate Limit**: No published limits
+
+**Key Endpoints:**
+
+```typescript
+// Brand → Generic (primary mapping)
+GET /drugs.json?name=Panadol
+  → Extract: rxnormProperties.genericName
+
+// Generic → Brands
+GET /drugs.json?name=acetaminophen
+  → Extract: all rxnormProperties.brandName values
+
+// Spelling suggestions (for empty results)
+GET /spellingsuggestions.json?name=panadol
+```
+
+**Role in Architecture**:
+1. User searches "Panadol" → RxNorm returns generic "Acetaminophen"
+2. Then openFDA searched by generic name
+3. BPOM also searched for Indonesian brand equivalents
+4. Results merged under unified schema
+
+### 5.3 BPOM CekBPOM API
+
+**Purpose**: Indonesian drug registration data, local brand coverage  
+**Status**: Investigation needed — either official API or manual dataset
+
+**Potential Approaches (TBD):**
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Official CekBPOM API** | Official source, real-time | May not exist or require official access |
+| **data.go.id BPOM Dataset** | Free, downloadable CSV | Manual download, no API, may be stale |
+| **Web Scraping** | Can get current data | Brittle, may violate ToS |
+| **Community Curation** | Flexible | High maintenance burden |
+
+**Minimum Requirement (MVP)**: Manual dataset of top 500 Indonesian drugs with NIE (Nomor Izin Edar) registration data. Can be expanded to API later.
+
+### 5.4 API Failure Handling
+
+All API calls wrapped in try/catch with graceful degradation:
+
+```typescript
+async function searchDrugs(query: string): Promise<Drug[]> {
+  const results = await Promise.allSettled([
+    openFDASearch(query),
+    rxnormSearch(query),
+    bpomSearch(query),
+  ]);
+
+  return results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value)
+    .filter(Boolean);
+}
+```
+
+If one API fails → show results from available sources with a banner: "Some data sources are temporarily unavailable."
+
+---
+
+## 6. Caching Strategy
+
+### 6.1 Redis Caching (Primary)
+
+**Technology**: Redis (via Upstash Redis or self-hosted)  
+**Why Redis**: Persistent, configurable TTL, supports cache invalidation, works well with Next.js serverless functions
+
+```typescript
+// Using @upstash/redis (serverless Redis)
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url: process.env.REDIS_URL!,
+  token: process.env.REDIS_TOKEN!,
+});
+
+// Cache a drug search result
+async function getCachedSearch(query: string): Promise<Drug[] | null> {
+  const cacheKey = `search:${query.toLowerCase().trim()}`;
+  const cached = await redis.get<Drug[]>(cacheKey);
+  return cached;
+}
+
+async function setCachedSearch(query: string, results: Drug[]): Promise<void> {
+  const cacheKey = `search:${query.toLowerCase().trim()}`;
+  await redis.set(cacheKey, results, { ex: 86400 }); // 24 hours TTL
+}
+```
+
+**Redis Data Structures:**
+
+| Key Pattern | Value Type | TTL | Purpose |
+|------------|------------|-----|---------|
+| `search:{query}` | JSON (Drug[]) | 24h | Search results |
+| `drug:{id}` | JSON (Drug) | 24h | Individual drug details |
+| `mapping:brand:{brand}` | JSON (string) | 7d | Brand → Generic mapping |
+| `mapping:generic:{generic}` | JSON (string[]) | 7d | Generic → Brands mapping |
+| `bpom:all` | JSON (Drug[]) | 6h | Full BPOM dataset |
+
+### 6.2 Two-Tier Caching
+
+**Tier 1: Redis (Application Layer)**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Next.js Server                                          │
+│  ┌─────────────┐     ┌─────────────┐                   │
+│  │ Cache Check │────▶│   Redis     │                   │
+│  └─────────────┘     │  (Upstash)  │                   │
+│         │            └─────────────┘                   │
+│         │ MISS                │ HIT                     │
+│         ▼                     │                         │
+│  ┌──────────────────────────────────────────┐           │
+│  │  Parallel API Fetches                    │           │
+│  │  ├── openFDA ───▶ Normalize ──▶ Cache   │           │
+│  │  ├── RxNorm  ───▶ Normalize ──▶ Cache   │           │
+│  │  └── BPOM   ───▶ Normalize ──▶ Cache     │           │
+│  └──────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Tier 2: Cloudflare Edge Cache (CDN Layer)**
+
+- Cache the rendered SSR pages at edge locations
+- Reduces load on Next.js serverless functions
+- Serves static-ish content (search results) globally
+
+### 6.3 Cache Invalidation
+
+| Trigger | Action |
+|---------|--------|
+| **24h TTL expiry** | Automatic expiration |
+| **API error detected** | Delete specific cache key via Redis DEL |
+| **Manual refresh** | Admin endpoint: `DELETE /api/cache?key=search:{query}` |
+| **New BPOM dataset** | Flush `bpom:*` keys, then repopulate |
+| **RxNorm mapping stale** | 7d TTL auto-refresh |
+
+### 6.4 Redis Environment Variables
+
+```bash
+# .env.local (development)
+REDIS_URL=           # Upstash Redis URL (e.g., https://xxx.upstash.io)
+REDIS_TOKEN=         # Upstash REST Token
+
+# .env.production (Cloudflare Pages)
+REDIS_URL=           # Set in Cloudflare dashboard
+REDIS_TOKEN=         # Set in Cloudflare dashboard
+```
+
+---
+
+## 7. Hosting & Deployment
+
+### 7.1 Cloudflare Pages Setup
+
+```
+Build Configuration:
+├── Framework preset: Next.js
+├── Build command: npm run build
+├── Build output directory: .next
+└── Environment variables:
+    ├── OPENFDA_API_KEY (optional, increases rate limit)
+    ├── RXNAV_API_BASE (optional, custom endpoint)
+    └── NEXT_PUBLIC_APP_URL (for metadata/SEO)
+```
+
+**Free Tier Limits:**
+- Unlimited requests
+- 500 builds/month
+- 100 deployments
+- 20 concurrent builds
+- Global CDN (300+ locations)
+- 25ms cold start (Workers)
+
+### 7.2 CI/CD Pipeline
+
+```
+GitHub Actions (or Cloudflare auto-deploy):
+1. Push to main → Cloudflare auto-deploys production
+2. PR opened → Cloudflare creates preview deployment
+3. PR merged → main auto-deploys
+4. PR closed → preview deployment auto-deleted
+```
+
+---
+
+## 8. Security
+
+### 8.1 API Key Protection
+
+- All third-party API keys stored as Cloudflare Pages Environment Variables (encrypted at rest)
+- Keys only accessible in Cloudflare Workers / server-side code
+- Client never receives raw API responses — only normalized data
+
+### 8.2 Input Validation
+
+```typescript
+// Sanitize search queries
+function sanitizeQuery(query: string): string {
+  return query
+    .trim()
+    .slice(0, 200) // Max length
+    .replace(/[<>\"\'`]/g, '') // Strip potentially dangerous chars
+    .toLowerCase();
+}
+
+// URL parameter validation
+const searchParams = new URL(request.url).searchParams;
+const query = searchParams.get('q');
+if (!query || query.length < 2) {
+  return Response.json({ error: 'Query too short' }, { status: 400 });
+}
+```
+
+### 8.3 Content Security
+
+- **No user-generated content** (no comments, reviews, profiles) → minimal XSS surface
+- **CSP headers**: Strict default policy
+- **Rate limiting**: Cloudflare automatic DDoS protection + manual rate rules on API routes
+
+---
+
+## 9. Performance Targets
+
+| Metric | Target | Strategy |
+|--------|--------|----------|
+| **TTFB** | < 200ms | Cloudflare Edge Cache (cache hits) |
+| **LCP** | < 2.5s | Static pages, optimized images, font preloading |
+| **Search Latency (P95)** | < 3s | Server cache + parallel API fetches |
+| **Cache Hit Rate** | > 70% | 24h TTL + SWR |
+| **Error Rate** | < 2% | Graceful degradation, circuit breakers |
+| **Build Time** | < 5 min | Incremental builds, parallel test execution |
+
+---
+
+## 10. Environment Configuration
+
+```bash
+# .env.local (development)
+OPENFDA_API_KEY=           # Optional, for higher rate limits
+REDIS_URL=                 # Upstash Redis URL (e.g., https://xxx.upstash.io)
+REDIS_TOKEN=               # Upstash REST Token
+
+# .env.production (Cloudflare Pages)
+OPENFDA_API_KEY=           # Required for production (optional for MVP)
+REDIS_URL=                 # Set in Cloudflare dashboard
+REDIS_TOKEN=               # Set in Cloudflare dashboard
+NEXT_PUBLIC_APP_URL=https://medik.pages.dev
+```
+
+## 11. React Component Pattern (Compound Components)
+
+To maintain clean, reusable, and flexible UI code, Medik uses **Compound Component Pattern** heavily across the codebase.
+
+### What is Compound Component Pattern?
+
+A design pattern where multiple components work together to form a complete UI widget. The parent controls the state/logic, and children render specific parts.
+
+**Example: DrugCard**
+
+```typescript
+// Compound component structure
+<DrugCard drug={drug}>
+  <DrugCard.Header>
+    <DrugCard.BrandName />
+    <DrugCard.GenericName />
+    <DrugCard.SourceBadge />
+  </DrugCard.Header>
+  
+  <DrugCard.Body>
+    <DrugCard.Indications />
+    <DrugCard.Dosage />
+    <DrugCard.Warnings />
+  </DrugCard.Body>
+  
+  <DrugCard.Footer>
+    <DrugCard.LastUpdated />
+    <DrugCard.Actions />
+  </DrugCard.Footer>
+</DrugCard>
+```
+
+### Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Flexibility** | Consumers can reorder or omit sub-components |
+| **Encapsulation** | Internal state/logic hidden in parent |
+| **Reusability** | Same compound works in different contexts |
+| **Type Safety** | TypeScript ensures valid sub-component usage |
+| **Clean JSX** | No prop-drilling, declarative structure |
+
+### Implementation Pattern
+
+```typescript
+// DrugCard.tsx
+import { createContext, useContext } from 'react';
+
+interface DrugCardContextType {
+  drug: Drug;
+}
+
+const DrugCardContext = createContext<DrugCardContextType | null>(null);
+
+function useDrugCard() {
+  const context = useContext(DrugCardContext);
+  if (!context) throw new Error('DrugCard.* must be used within <DrugCard>');
+  return context;
+}
+
+// Main container
+interface DrugCardProps {
+  drug: Drug;
+  children: React.ReactNode;
+}
+
+export function DrugCard({ drug, children }: DrugCardProps) {
+  return (
+    <DrugCardContext.Provider value={{ drug }}>
+      <div className="drug-card">{children}</div>
+    </DrugCardContext.Provider>
+  );
+}
+
+// Sub-components
+DrugCard.Header = function Header({ children }: { children: React.ReactNode }) {
+  return <div className="drug-card-header">{children}</div>;
+};
+
+DrugCard.BrandName = function BrandName() {
+  const { drug } = useDrugCard();
+  return <h2 className="brand-name">{drug.brandNames[0]}</h2>;
+};
+
+DrugCard.GenericName = function GenericName() {
+  const { drug } = useDrugCard();
+  return <p className="generic-name">({drug.genericName})</p>;
+};
+
+// ... more sub-components
+```
+
+### Applied to Medik Components
+
+| Component | Sub-Components | Purpose |
+|-----------|-----------------|---------|
+| `SearchBar` | `Input`, `Suggestions`, `ClearButton`, `SearchButton` | Composable search widget |
+| `DrugCard` | `Header`, `BrandName`, `GenericName`, `Indications`, `Dosage`, `Warnings`, `Footer` | Flexible drug display |
+| `DrugDetail` | `Hero`, `ClinicalInfo`, `SourceAttribution`, `Disclaimer`, `Actions` | Full detail view |
+| `Disclaimer` | `Text`, `Icon`, `Toggle` | Reusable disclaimer across pages |
+| `SourceBadge` | `Icon`, `Label` | Attributed source display |
+
+### Folder Structure for Compound Components
+
+```
+src/
+└── components/
+    ├── ui/                      # Primitive components
+    │   ├── button.tsx
+    │   ├── badge.tsx
+    │   └── input.tsx
+    ├── search-bar/              # Compound component (folder pattern)
+    │   ├── index.tsx            # Exports SearchBar + sub-components
+    │   ├── search-bar.tsx       # Main container
+    │   ├── search-input.tsx
+    │   ├── search-suggestions.tsx
+    │   └── search-button.tsx
+    ├── drug-card/               # Compound component
+    │   ├── index.tsx
+    │   ├── drug-card.tsx
+    │   ├── drug-card-header.tsx
+    │   ├── drug-card-body.tsx
+    │   └── drug-card-footer.tsx
+    └── disclaimer/              # Simple compound
+        ├── index.tsx
+        ├── disclaimer-text.tsx
+        └── disclaimer-icon.tsx
+```
+
+---
+
+## 11. Design System — Clinical Minimalism
+
+Medik uses the **Clinical Minimalism** design system defined in `/STITCH/clinical_minimalism/DESIGN.md`.
+
+### 11.1 Core Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Less Lines** | Replace borders with ambient shadows; use whitespace over dividers |
+| **Clinical Clarity** | Medical-grade legibility; WCAG AA/AAA compliance |
+| **Emotional Calm** | Soft geometry, muted tones, breathable layouts |
+| **Professional Trust** | Authority without being cold or institutional |
+
+### 11.2 Color Palette
+
+| Role | Color | Usage |
+|------|-------|-------|
+| **Medik Blue** `#004ac6` | Primary | Primary actions, links, focus states |
+| **Care Teal** `#006a61` | Secondary | Secondary actions, health indicators, success |
+| **Hospital White** `#faf8ff` | Surface | Main canvas, backgrounds |
+| **Clinical Slate** `#191b23` | On-Surface | Primary text, headings |
+| **Surface Dim** `#d9d9e5` | Variant | Secondary text, borders |
+| **Error Red** `#ba1a1a` | Error | Validation errors, critical warnings |
+
+**Full palette:** See `/STITCH/clinical_minimalism/DESIGN.md` (lines 3-50)
+
+### 11.3 Typography
+
+| Style | Font | Size | Weight | Usage |
+|-------|------|------|--------|-------|
+| **H1** | Inter | 40px | 700 | Page titles |
+| **H2** | Inter | 32px | 600 | Section headers |
+| **H3** | Inter | 24px | 600 | Card titles |
+| **Body LG** | Inter | 18px | 400 | Primary body text |
+| **Body MD** | Inter | 16px | 400 | Secondary body text |
+| **Label Bold** | Inter | 14px | 600 | Button text, labels |
+| **Label SM** | Inter | 12px | 500 | Captions, metadata |
+
+### 11.4 Spacing & Layout
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| **base** | 4px | Baseline grid |
+| **sm** | 8px | Tight spacing |
+| **md** | 16px | Standard spacing |
+| **lg** | 24px | Section spacing |
+| **xl** | 40px | Large gaps |
+
+- **Grid**: Fixed 12-column (desktop), fluid (mobile)
+- **Margins**: Wide to center user focus
+- **Negative space** preferred over physical dividers
+
+### 11.5 Elevation & Depth
+
+| Level | Shadow | Usage |
+|-------|--------|-------|
+| **L0 (Surface)** | None | Main canvas background |
+| **L1 (Card)** | `0px 4px 20px rgba(30, 41, 59, 0.05)` | Primary content containers |
+| **L2 (Interactive)** | `0px 8px 30px rgba(30, 41, 59, 0.1)` | Hovered states, dropdowns |
+| **Focus** | `3px solid #004ac6, 2px offset` | Keyboard navigation (required) |
+
+### 11.6 Shape Language
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| **sm** | 4px | Small badges, tags |
+| **DEFAULT** | 8px | Buttons, inputs |
+| **md** | 12px | Medium containers |
+| **lg** | 16px | Cards, panels |
+| **xl** | 24px | Large containers |
+| **full** | 9999px | Pills, avatars |
+
+### 11.7 Component Guidelines
+
+**Cards:**
+- No borders
+- Level 1 ambient shadow only
+- Generous padding (min 24px)
+- Rounded corners (lg = 16px)
+
+**Buttons:**
+- Medik Blue solid fill (primary)
+- Care Teal ghost style (secondary)
+- 8px rounded corners
+- Subtle hover transitions
+
+**Input Fields:**
+- Hospital White background (slightly dimmer than surface)
+- No borders unless error (soft red) or focus
+- "Well" effect for depth
+
+**Lists:**
+- Zebra striping at very low opacity (no horizontal lines)
+- Alternating row backgrounds for "less lines" aesthetic
+
+### 11.8 Accessibility (A11Y)
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Focus rings | 3px solid Medik Blue, 2px offset on all interactive elements |
+| Color contrast | WCAG AA minimum (4.5:1 for text) |
+| Icons | Always paired with text labels or ARIA descriptions |
+| Touch targets | Minimum 44x44px on mobile |
+
+### 11.9 Design Reference Files
+
+```
+STITCH/
+├── clinical_minimalism/
+│   └── DESIGN.md                 # Full design system specification
+├── medik_simplified_search_results/
+│   ├── screen.png               # Visual mockup
+│   └── code.html                # Implementation reference
+└── medik_simplified_search_portal/
+    ├── screen.png               # Visual mockup
+    └── code.html                # Implementation reference
+```
+
+---
+
+## 12. Open Questions & Decisions Needed
+
+| # | Question | Status | Priority |
+|---|----------|--------|----------|
+| 1 | BPOM API confirmed accessible? | Pending investigation | High |
+| 2 | Internationalization library (next-intl, react-i18next)? | Decision needed | Medium |
+| 3 | Auth for admin cache invalidation endpoint? | Decision needed | Low |
+| 4 | Analytics tool (Plausible, Umami, none)? | Decision needed | Low |
+
+**Design System**: Confirmed via `/STITCH/clinical_minimalism/DESIGN.md` — Clinical Minimalism
+
+---
+
+## 13. Revision History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | May 8, 2026 | Engineering Team | Initial architecture draft |
+| 1.1 | May 8, 2026 | Engineering Team | Added Redis caching, compound components, design system |
+
+---
+
+*For implementation questions, open an issue on GitHub.*

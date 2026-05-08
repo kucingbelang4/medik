@@ -22,13 +22,9 @@ interface DisclaimerProps {
 }
 
 export function Disclaimer({ children }: DisclaimerProps) {
-  // This is a simple provider without state for now
-  // Can be enhanced with localStorage persistence
   return (
     <DisclaimerContext.Provider value={{ acknowledged: true, setAcknowledged: () => {} }}>
-      <div className="disclaimer">
-        {children}
-      </div>
+      {children}
     </DisclaimerContext.Provider>
   );
 }

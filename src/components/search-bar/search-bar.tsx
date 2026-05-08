@@ -8,10 +8,17 @@ interface SearchBarContextType {
   suggestions: string[];
   setSuggestions: (suggestions: string[]) => void;
   isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
-const SearchBarContext = createContext<SearchBarContextType | undefined>(undefined);
+const SearchBarContext = createContext<SearchBarContextType>({
+  query: '',
+  setQuery: () => {},
+  suggestions: [],
+  setSuggestions: () => {},
+  isLoading: false,
+  setIsLoading: () => {},
+});
 
 export function useSearchBar() {
   const context = useContext(SearchBarContext);
@@ -23,28 +30,19 @@ export function useSearchBar() {
 
 interface SearchBarProps {
   children: ReactNode;
-  initialQuery?: string;
+  className?: string;
 }
 
-export function SearchBar({ children, initialQuery = '' }: SearchBarProps) {
-  const [query, setQuery] = useState(initialQuery);
+export default function SearchBar({ children, className }: SearchBarProps) {
+  const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <SearchBarContext.Provider value={{
-      query,
-      setQuery,
-      suggestions,
-      setSuggestions,
-      isLoading,
-      setIsLoading,
-    }}>
-      <div className="search-bar">
+    <SearchBarContext.Provider value={{ query, setQuery, suggestions, setSuggestions, isLoading, setIsLoading }}>
+      <div className={`search-bar ${className || ''}`}>
         {children}
       </div>
     </SearchBarContext.Provider>
   );
 }
-
-export default SearchBar;

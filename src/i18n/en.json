@@ -1,0 +1,61 @@
+{
+  "app": {
+    "name": "Medik",
+    "tagline": "Indonesian Drug Information Database"
+  },
+  "search": {
+    "placeholder": "Search by symptom, illness, or drug name...",
+    "button": "Search",
+    "clear": "Clear",
+    "noResults": "No results found for",
+    "suggestions": "Suggestions",
+    "trySearch": "Try searching for:",
+    "popularSearches": "Popular Searches"
+  },
+  "drug": {
+    "genericName": "Generic Name",
+    "brandNames": "Brand Names",
+    "indications": "Indications",
+    "dosage": "Dosage",
+    "warnings": "Warnings",
+    "contraindications": "Contraindications",
+    "interactions": "Drug Interactions",
+    "source": "Source",
+    "lastUpdated": "Last Updated",
+    "registrationNumber": "Registration Number",
+    "form": "Form",
+    "strength": "Strength",
+    "packaging": "Packaging",
+    "manufacturer": "Manufacturer",
+    "applicant": "Applicant",
+    "status": "Status",
+    "class": "Class",
+    "category": "Category"
+  },
+  "sources": {
+    "openFDA": "openFDA",
+    "RxNorm": "RxNorm",
+    "BPOM": "BPOM"
+  },
+  "disclaimer": {
+    "title": "Medical Disclaimer",
+    "text": "This information is for educational purposes only. It is NOT medical advice. Always consult a doctor or pharmacist before taking any medication. In case of emergency, contact your local emergency services.",
+    "acknowledged": "I understand this is not medical advice"
+  },
+  "errors": {
+    "apiError": "Some data sources are temporarily unavailable. Please try again later.",
+    "notFound": "Drug not found",
+    "networkError": "Network error. Please check your connection."
+  },
+  "actions": {
+    "share": "Share",
+    "compare": "Compare",
+    "back": "Back to results",
+    "learnMore": "Learn More"
+  },
+  "language": {
+    "toggle": "Language",
+    "id": "Bahasa Indonesia",
+    "en": "English"
+  }
+}

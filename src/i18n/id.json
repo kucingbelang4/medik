@@ -1,0 +1,61 @@
+{
+  "app": {
+    "name": "Medik",
+    "tagline": "Database Informasi Obat Indonesia"
+  },
+  "search": {
+    "placeholder": "Cari berdasarkan gejala, penyakit, atau nama obat...",
+    "button": "Cari",
+    "clear": "Hapus",
+    "noResults": "Tidak ada hasil untuk",
+    "suggestions": "Saran",
+    "trySearch": "Coba cari:",
+    "popularSearches": "Pencarian Populer"
+  },
+  "drug": {
+    "genericName": "Nama Generik",
+    "brandNames": "Nama Merek",
+    "indications": "Indikasi",
+    "dosage": "Dosis",
+    "warnings": "Peringatan",
+    "contraindications": "Kontraindikasi",
+    "interactions": "Interaksi Obat",
+    "source": "Sumber",
+    "lastUpdated": "Terakhir Diperbarui",
+    "registrationNumber": "Nomor Registrasi",
+    "form": "Bentuk",
+    "strength": "Kekuatan",
+    "packaging": "Kemasan",
+    "manufacturer": "Produsen",
+    "applicant": "Pemegang Izin",
+    "status": "Status",
+    "class": "Kelas",
+    "category": "Kategori"
+  },
+  "sources": {
+    "openFDA": "openFDA",
+    "RxNorm": "RxNorm",
+    "BPOM": "BPOM"
+  },
+  "disclaimer": {
+    "title": "Peringatan Medis",
+    "text": "Informasi ini hanya untuk tujuan edukasi. Ini BUKAN nasihat medis. Selalu konsultasikan dengan dokter atau apoteker sebelum mengonsumsi obat apapun. Dalam keadaan darurat, hubungi layanan darurat setempat.",
+    "acknowledged": "Saya memahami ini bukan nasihat medis"
+  },
+  "errors": {
+    "apiError": "Beberapa sumber data sementara tidak tersedia. Silakan coba lagi nanti.",
+    "notFound": "Obat tidak ditemukan",
+    "networkError": "Kesalahan jaringan. Silakan periksa koneksi Anda."
+  },
+  "actions": {
+    "share": "Bagikan",
+    "compare": "Bandingkan",
+    "back": "Kembali ke hasil",
+    "learnMore": "Pelajari Lebih"
+  },
+  "language": {
+    "toggle": "Bahasa",
+    "id": "Bahasa Indonesia",
+    "en": "English"
+  }
+}

@@ -10,15 +10,18 @@ export default function Home() {
             Medik
           </Link>
           <nav className="hidden md:flex items-center gap-xl">
-            <Link href="/medicines" className="font-label-bold text-label-bold text-on-surface-variant hover:text-primary transition-colors">
+            <Link href="/search" className="font-label-bold text-label-bold text-on-surface-variant hover:text-primary transition-colors">
               Medicines
             </Link>
             <Link href="/illnesses" className="font-label-bold text-label-bold text-on-surface-variant hover:text-primary transition-colors">
               Illnesses
             </Link>
-            <Link href="/index" className="font-label-bold text-label-bold text-on-surface-variant hover:text-primary transition-colors">
-              A‑Z Index
-            </Link>
+            <div className="h-4 w-px bg-outline-variant/30 mx-xs" />
+            <div className="flex items-center gap-xs">
+              <button className="font-label-sm text-label-sm text-primary font-bold">EN</button>
+              <span className="text-outline-variant text-xs">/</span>
+              <button className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">ID</button>
+            </div>
           </nav>
           <button className="p-2 rounded-full text-primary hover:bg-primary/5" aria-label="Account">
             <span className="material-symbols-outlined" data-icon="account_circle">account_circle</span>

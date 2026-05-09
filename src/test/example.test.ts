@@ -10,21 +10,45 @@ describe('Medik Core Types', () => {
 
   it('should create valid Drug object', () => {
     const drug: Drug = {
-      registrationNumber: 'DKI1234567890',
-      productName: 'PARACETAMOL 500 MG TABLET',
+      id: 'NDC-12345-6789',
+      source: 'openFDA',
+      genericName: 'Acetaminophen',
+      brandNames: ['Tylenol', 'Panadol', 'Calpol'],
+      indications: 'For temporary relief of minor aches and pains due to headache, toothache, etc.',
+      dosage: 'Adults and children 12 years and over: take 2 tablets every 4-6 hours',
+      warnings: 'Do not take more than 10 tablets in 24 hours.',
+      contraindications: 'Do not use if you are allergic to acetaminophen.',
+      interactions: 'May interact with blood thinners like warfarin.',
+      lastUpdated: '2024-01-15',
+    }
+
+    expect(drug.id).toBe('NDC-12345-6789')
+    expect(drug.source).toBe('openFDA')
+    expect(drug.genericName).toBe('Acetaminophen')
+    expect(drug.brandNames).toContain('Tylenol')
+  })
+
+  it('should create valid BPOM Drug object', () => {
+    const drug: Drug = {
+      id: 'DKI12345678901',
+      source: 'BPOM',
+      genericName: 'Paracetamol',
+      brandNames: ['Sanmol', 'Bodrex', 'Oskadon'],
+      registrationNumber: 'DKI12345678901',
+      applicant: 'PT Sanbe Farma',
+      manufacturer: 'PT Sanbe Farma',
       form: 'TABLET',
       strength: '500 MG',
       packaging: '10 TABLET',
-      applicant: 'PT Contoh Farma',
-      manufacturer: 'PT Contoh Farma Indonesia',
-      registrationDate: '01-01-2023',
       status: 'BERLAKU',
-      class: 'OBAT KLASIK',
-      category: 'OBAT BEBAS TERBATAS',
+      class: 'OBAT BEBAS TERBATAS',
+      category: 'ANALGESIK - ANTIPIRETIK',
+      lastUpdated: '2024-01-01',
     }
 
-    expect(drug.registrationNumber).toBe('DKI1234567890')
-    expect(drug.productName).toBe('PARACETAMOL 500 MG TABLET')
+    expect(drug.id).toBe('DKI12345678901')
+    expect(drug.source).toBe('BPOM')
+    expect(drug.registrationNumber).toBe('DKI12345678901')
     expect(drug.form).toBe('TABLET')
   })
 

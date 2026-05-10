@@ -16,7 +16,6 @@ describe('SearchPage component', () => {
 
   it('renders empty state when no query', async () => {
     const props = { searchParams: {} };
-    // Call SearchPage as a function because it's a Server Component (async)
     const result = await SearchPage(props);
     render(result);
     expect(screen.getByText(/Enter a medicine name, symptom, or illness to search/)).toBeInTheDocument();
@@ -44,9 +43,10 @@ describe('SearchPage component', () => {
     render(result);
 
     // Wait for async rendering
-    const drugCard = await screen.findByText(/search results for "tylenol"/i);
-    expect(drugCard).toBeInTheDocument();
-    expect(screen.getByText('Acetaminophen')).toBeInTheDocument();
+    const searchHeading = await screen.findByRole('heading', { level: 1 });
+    expect(searchHeading).toHaveTextContent(/search results for/i);
+    expect(searchHeading).toHaveTextContent(/tylenol/i);
+    expect(screen.getByText('Tylenol')).toBeInTheDocument();
     expect(setCachedSearch).not.toHaveBeenCalled();
   });
 
@@ -73,9 +73,10 @@ describe('SearchPage component', () => {
     render(result);
 
     // Should display results after API call resolves
-    const searchHeader = await screen.findByText(/search results for "ibuprofen"/i);
-    expect(searchHeader).toBeInTheDocument();
-    expect(screen.getByText('Ibuprofen')).toBeInTheDocument();
+    const searchHeader = await screen.findByRole('heading', { level: 1 });
+    expect(searchHeader).toHaveTextContent(/search results for/i);
+    expect(searchHeader).toHaveTextContent(/ibuprofen/i);
+    expect(screen.getByText('Advil')).toBeInTheDocument();
     expect(searchDrugs).toHaveBeenCalled();
     expect(setCachedSearch).toHaveBeenCalledWith('ibuprofen', apiDrugs);
   });

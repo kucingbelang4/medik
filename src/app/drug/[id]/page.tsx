@@ -18,6 +18,7 @@ export default async function DrugDetailPage({ params }: { params: { id: string 
   const drug = await getDrugById(drugId);
   
   if (!drug) {
+    console.log('[DrugDetail] Drug not found in API, returning 404');
     notFound();
   }
 

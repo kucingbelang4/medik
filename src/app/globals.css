@@ -342,6 +342,100 @@
   .disclaimer-text {
     @apply font-label-sm text-label-sm text-tertiary;
   }
+
+  /* ============================================
+   * DRUG DETAIL COMPOUND COMPONENT
+   * ============================================ */
+  .drug-detail {
+    @apply flex flex-col gap-8;
+  }
+
+  /* Hero section */
+  .drug-detail-hero {
+    @apply flex flex-col gap-sm pb-8 border-b border-outline-variant/30;
+  }
+
+  .drug-detail-brand-name {
+    @apply font-h1 text-on-surface;
+    @apply text-4xl font-bold leading-tight tracking-tight;
+  }
+
+  .drug-detail-generic-name {
+    @apply font-body-lg text-on-surface-variant;
+  }
+
+  .drug-detail-source-badge {
+    @apply medik-badge mt-4 self-start;
+  }
+
+  .drug-detail-source-badge.source-openfda { @apply bg-primary-fixed text-on-primary-fixed; }
+  .drug-detail-source-badge.source-rxnorm { @apply bg-secondary-fixed text-on-secondary-fixed; }
+  .drug-detail-source-badge.source-bpom { @apply bg-primary-fixed-dim text-on-primary-fixed; }
+
+  /* Clinical information section */
+  .drug-detail-clinical {
+    @apply flex flex-col gap-6;
+  }
+
+  .clinical-section {
+    @apply medik-card bg-surface-container-lowest;
+  }
+
+  .clinical-section summary {
+    @apply font-label-bold text-label-bold text-on-surface;
+    @apply cursor-pointer list-none flex items-center gap-2;
+    @apply hover:text-primary transition-colors duration-150;
+  }
+
+  .clinical-section summary::before {
+    content: "▸";
+    @apply text-primary text-sm transition-transform duration-150;
+  }
+
+  .clinical-section[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .clinical-section p {
+    @apply font-body-md text-on-surface-variant mt-md pt-md;
+    @apply border-t border-outline-variant/30;
+  }
+
+  /* Warnings variant */
+  .clinical-section.warnings {
+    @apply bg-error-container/20 border border-error/20;
+  }
+
+  .clinical-section.warnings summary {
+    @apply text-error;
+  }
+
+  .clinical-section.warnings summary::before {
+    content: "⚠";
+    @apply text-error;
+  }
+
+  .clinical-section.warnings p {
+    @apply text-on-error-container;
+  }
+
+  /* Actions section */
+  .drug-detail-actions {
+    @apply flex flex-wrap gap-4 items-center pt-8 mt-8;
+    @apply border-t border-outline-variant/30;
+  }
+
+  .drug-detail-action {
+    @apply medik-button medik-button--primary medik-button--md;
+  }
+
+  .drug-detail-action:hover {
+    @apply bg-primary/90;
+  }
+
+  .drug-detail-action:active {
+    @apply scale-[0.98];
+  }
 }
 
 @layer utilities {

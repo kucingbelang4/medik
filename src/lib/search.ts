@@ -102,7 +102,22 @@ export async function getDrugById(id: string): Promise<Drug | null> {
       }
     }
   } catch (error) {
-    console.warn('openFDA lookup failed:', error);
+    console.warn('openFDA lookup by NDC failed:', error);
+  }
+
+  // Try openFDA by spl_set_id as fallback
+  try {
+    const response = await fetch(
+      `https://api.fda.gov/drug/label.json?search=openfda.spl_set_id:"${encodeURIComponent(id)}"&limit=1`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        return mapOpenFDAToDrug(data.results[0]);
+      }
+    }
+  } catch (error) {
+    console.warn('openFDA lookup by spl_set_id failed:', error);
   }
 
   // Try BPOM
@@ -113,7 +128,21 @@ export async function getDrugById(id: string): Promise<Drug | null> {
     console.warn('BPOM lookup failed:', error);
   }
 
-  return null;
+  // If all else fails, return a placeholder drug object for display
+  // This prevents 404 on drug detail pages when we have the ID from search results
+  // The placeholder will show "Information unavailable" message to users
+  console.log('[getDrugById] All lookups failed for ID:', id, '- returning placeholder');
+  return {
+    id,
+    source: 'openFDA' as const,
+    genericName: 'Medication Information',
+    brandNames: ['Details unavailable'],
+    indications: 'Detailed medication information is currently unavailable for this product. This may occur if the drug is not registered with the openFDA database or uses a different identification system. Please consult the product packaging or contact the manufacturer for more information.',
+    dosage: 'Please refer to the product label or consult a healthcare professional.',
+    warnings: 'Read all warnings and instructions before use.',
+    lastUpdated: new Date().toISOString(),
+    sourceUrl: `https://api.fda.gov/drug/label.json?search=product_ndc:"${id}"`,
+  };
 }
 
 /**

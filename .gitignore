@@ -37,6 +37,7 @@ out/
 *.swo
 *~
 .DS_Store
+avante.md
 
 # Logs
 logs/

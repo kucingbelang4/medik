@@ -1,0 +1,30 @@
+[
+  {
+    "nie_number": "198320",
+    "nama_generik": "Paracetamol",
+    "nama_merek": "Panadol",
+    "pemegang_izin": "PT. ABC",
+    "pabrik": "PT. XYZ",
+    "bentuk_sediaan": "Tablet",
+    "kekutan": "500 mg",
+    "kemasan": "10 tablet",
+    "status": "Tersedia",
+    "kelas_obat": " Golongan A",
+    "golongan": "Obat Bebas Terbatas",
+    "tanggal_daftar": "2020-01-15"
+  },
+  {
+    "nie_number": "59651-360",
+    "nama_generik": "Ibuprofen",
+    "nama_merek": "Nurofen",
+    "pemegang_izin": "PT. DEF",
+    "pabrik": "PT. UVW",
+    "bentuk_sediaan": "Tablet",
+    "kekutan": "200 mg",
+    "kemasan": "12 tablet",
+    "status": "Tersedia",
+    "kelas_obat": " Golongan B",
+    "golongan": "Obat Bebas",
+    "tanggal_daftar": "2019-03-22"
+  }
+]

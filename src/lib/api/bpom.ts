@@ -45,17 +45,24 @@ interface BPOMRaw {
   tanggal_daftar?: string;
 }
 
+import { join } from 'path';
+
 /**
- * Load BPOM dataset from local JSON file
+ * Load BPom dataset from local JSON file (server-side file system access)
  */
 export async function loadBPOMDataset(): Promise<Drug[]> {
   try {
-    const response = await fetch('/dataset/bpom-drugs.json');
-    if (!response.ok) {
-      console.warn('BPOM dataset not found, returning empty array');
+    // Use Node.js fs for server-side file reading
+    const fs = await import('fs');
+    const filePath = join(process.cwd(), 'public', 'dataset', 'bpom-drugs.json');
+    
+    if (!fs.existsSync(filePath)) {
+      console.warn('[BPOM] Dataset file not found at:', filePath);
       return [];
     }
-    const data: BPOMRaw[] = await response.json();
+    
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const data: BPOMRaw[] = JSON.parse(fileContent);
     
     return data.map((item) => ({
       id: item.nie_number || '',
@@ -74,7 +81,7 @@ export async function loadBPOMDataset(): Promise<Drug[]> {
       lastUpdated: item.tanggal_daftar || new Date().toISOString(),
     }));
   } catch (error) {
-    console.error('Error loading BPOM dataset:', error);
+    console.error('[BPOM] Error loading dataset:', error);
     return [];
   }
 }
